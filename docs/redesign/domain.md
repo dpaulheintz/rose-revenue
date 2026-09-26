@@ -68,7 +68,7 @@ When the redesign merges to production, I'll confirm `og:image` reads `https://r
 | Project | Serves the live site? | Evidence |
 |---|---|---|
 | **rose-revenue-site** | **Yes. Keep it.** | rose-revenue.com and `rose-revenue-site.vercel.app` serve the identical deployment (`dpl_56d77bE1…` in both pages' asset URLs). |
-| **rose-revenue** | No, it's a leftover | Its production URL, `rose-revenue.vercel.app`, returns **404**. That fits it being the project with the wrong framework preset. |
+| **rose-revenue** | No, it's a duplicate | It builds every push (this branch built fine there too), but nothing points at it: its default URL `rose-revenue.vercel.app` returns **404**, and your domain is served by rose-revenue-site. |
 
 **To disconnect (don't delete):**
 1. In the **pauls-projects** team, open project **rose-revenue**. Check the name carefully: it's the one *without* `-site`.
