@@ -1,21 +1,35 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------ *
- * Palette — derived entirely from hero.webp (see project brief).
- * No pure #000 or #fff anywhere; every tone is sampled from the image.
+ * Palette. Three temperature worlds, all tied to hero.webp.
+ * No pure #000 or #fff anywhere.
  * ------------------------------------------------------------------ */
 @theme {
-  --color-ink: #020d02; /* darkest foreground shadow — page background   */
+  /* Dusk: sampled from the hero art (unchanged). */
+  --color-ink: #020d02; /* darkest foreground shadow — page ground        */
   --color-ink-2: #17242d; /* deep river/forest teal — raised surfaces     */
-  --color-hill: #243825; /* sunlit green hill — hairlines, muted borders  */
-  --color-dusk: #4f4576; /* dusk-purple mountains — muted accents         */
+  --color-hill: #243825; /* sunlit green hill — hairlines                 */
+  --color-dusk: #4f4576; /* dusk-purple mountains                         */
   --color-rose: #aa4777; /* upper magenta-rose sky                        */
   --color-coral: #fc5f60; /* THE accent — coral sky glow                  */
   --color-paper: #f2e4dd; /* warm off-white from the sunlit road          */
   --color-muted: #b7a7a3; /* dimmed paper — secondary copy                */
 
+  /* Cold: the flat, fluorescent "bad software" world of The Pile. */
+  --color-cold-bg: #dde3ea;
+  --color-cold-surface: #eef1f5;
+  --color-cold-edge: #737e8c; /* control boundaries, ≥3:1 on cold-bg      */
+  --color-cold-ink: #222a35; /* 11.2:1 on cold-bg                         */
+  --color-cold-muted: #4d5866; /* 5.6:1 on cold-bg                        */
+
+  /* Night → plum: the way back to dusk. */
+  --color-night: #12142b;
+  --color-violet: #231d3f;
+  --color-plum: #1b1226;
+
   --font-display: var(--font-instrument);
   --font-body: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
 }
 
 /* ------------------------------------------------------------------ *
@@ -24,6 +38,8 @@
 html {
   scroll-behavior: smooth;
   background-color: var(--color-ink);
+  /* Keep focused/anchored content clear of the phone's sticky CTA bar. */
+  scroll-padding-bottom: 96px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -32,11 +48,13 @@ html {
   }
 }
 
+/* No body background: the html background paints the canvas, and the fixed
+   hero art (z-index -10) must show through where sections are transparent. */
 body {
-  background-color: var(--color-ink);
   color: var(--color-paper);
   font-family: var(--font-body), system-ui, sans-serif;
-  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -46,58 +64,284 @@ body {
   color: var(--color-ink);
 }
 
+:where(a, button, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-coral);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.world-cold :where(a, button, summary, [tabindex]):focus-visible {
+  outline-color: var(--color-cold-ink);
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 80;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-weight: 500;
+  transform: translateY(-150%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
 /* ------------------------------------------------------------------ *
- * Grain — a single fixed, tiling noise layer over the whole viewport.
- * pointer-events:none, ~5% opacity, sits above the page background and
- * unifies every section with the hero. Static, so it stays on even
- * with reduced motion.
+ * Layout + type
+ * ------------------------------------------------------------------ */
+.wrap {
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 64px);
+}
+
+.h-hero {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+/* Warm-world section headlines: the human voice. */
+.h-section {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.5rem, 6vw, 5.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+/* Cold-world headline: the serif is deliberately missing here. */
+.h-cold {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: clamp(2.2rem, 5.2vw, 4.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+.measure {
+  max-width: 34rem;
+}
+
+.kicker {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------------ *
+ * Texture + dither
  * ------------------------------------------------------------------ */
 .grain-overlay {
   position: fixed;
   inset: 0;
   z-index: 50;
   pointer-events: none;
-  background-image: url("/grain.png");
+  background-image: url("/grain.webp");
   background-repeat: repeat;
   background-size: 180px 180px;
   opacity: 0.05;
 }
 
+/* Static dither edges between temperature worlds, drawn at one image
+   pixel per 6 CSS px so they match the pixel scale of the hero art. */
+.band {
+  height: 240px;
+  background-repeat: repeat-x;
+  background-size: 576px 240px;
+  image-rendering: pixelated;
+}
+
+.band-dusk-to-cold {
+  background-image: url("/dither/dusk-to-cold.png");
+}
+
+.band-cold-to-night {
+  background-image: url("/dither/cold-to-night.png");
+}
+
+.band-plum-to-sky {
+  background-image: url("/dither/plum-to-sky.png");
+}
+
+@media (max-width: 639px) {
+  .band {
+    height: 160px;
+    background-size: 384px 160px;
+  }
+}
+
+/* Canvas overlay used by lib/dither.ts to dissolve/assemble elements. */
+.dither-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
 /* ------------------------------------------------------------------ *
- * Display headline scale — contrast is the design.
+ * The Pile — tiles
  * ------------------------------------------------------------------ */
-.h1-display {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(3rem, 8vw, 7rem);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  font-weight: 400;
+.tile {
+  position: relative;
+  display: flex;
+  min-height: 76px;
+  width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  overflow: hidden;
+  border: 1px solid var(--color-cold-edge);
+  border-radius: 6px;
+  background: var(--color-cold-surface);
+  padding: 12px 38px 12px 14px;
+  color: var(--color-cold-ink);
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.25;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 120ms ease-out;
 }
 
-.h-section {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(2rem, 4.5vw, 3.25rem);
-  line-height: 1;
-  letter-spacing: -0.02em;
-  font-weight: 400;
+.tile:active {
+  transform: scale(0.98);
 }
 
-/* Body copy is capped near 65 characters, left-aligned. */
-.measure {
-  max-width: 34rem; /* ~65ch at this body size */
+.tile .tile-price {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-cold-muted);
+}
+
+.tile .tile-box {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  border-radius: 3px;
+  background: var(--color-cold-ink);
+}
+
+.tile[aria-pressed="false"] {
+  border-style: dashed;
+  background-color: transparent;
+  background-image: repeating-conic-gradient(rgb(34 42 53 / 0.07) 0 25%, transparent 0 50%);
+  background-size: 4px 4px;
+  color: var(--color-cold-muted);
+}
+
+.tile[aria-pressed="false"] .tile-price {
+  text-decoration: line-through;
+}
+
+.tile[aria-pressed="false"] .tile-box {
+  border: 1.5px solid var(--color-cold-edge);
+  background: transparent;
+}
+
+.tile[aria-pressed="false"] .tile-box svg {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile {
+    transition: none;
+  }
 }
 
 /* ------------------------------------------------------------------ *
- * Reveal — sections fade in and rise 20px, once, on entering view.
- * The .is-visible class is toggled by an IntersectionObserver.
+ * One Place — the mock app warms up as it scrolls into view.
+ * --warm runs 0 → 1; accents mix from cold grey into coral.
+ * Browsers without scroll-driven animations get the warm end state.
+ * ------------------------------------------------------------------ */
+@property --warm {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+.mock-app {
+  --app-accent: color-mix(in oklab, var(--color-coral) calc(var(--warm) * 100%), #7d8796);
+  /* Lifted toward paper so small accent text clears 4.5:1 on the app cards. */
+  --app-accent-text: color-mix(in oklab, var(--app-accent) 72%, var(--color-paper));
+  background: color-mix(in oklab, #1d1936 calc(var(--warm) * 100%), #1c2130);
+  box-shadow: 0 40px 90px -40px rgb(252 95 96 / calc(var(--warm) * 0.45));
+}
+
+@keyframes app-warm-up {
+  from {
+    --warm: 0;
+  }
+  to {
+    --warm: 1;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .mock-app {
+      animation: app-warm-up linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Straight answers — native disclosure
+ * ------------------------------------------------------------------ */
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq .faq-icon {
+  transition: transform 200ms ease-out;
+}
+
+.faq[open] .faq-icon {
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq .faq-icon {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Reveal — headings fade in and rise 12px, once. Toggled by an
+ * IntersectionObserver in components/Reveal.tsx.
  * ------------------------------------------------------------------ */
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(12px);
   transition:
-    opacity 500ms ease-out,
-    transform 500ms ease-out;
-  will-change: opacity, transform;
+    opacity 320ms ease-out,
+    transform 320ms ease-out;
 }
 
 .reveal.is-visible {
@@ -105,10 +349,26 @@ body {
   transform: none;
 }
 
+/* Hero supporting lines settle in once on load; the H1 (LCP) never animates. */
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.settle {
+  animation: settle 260ms ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .settle {
+    animation: none;
   }
 }
