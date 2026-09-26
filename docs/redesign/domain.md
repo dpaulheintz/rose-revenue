@@ -63,16 +63,16 @@ When the redesign merges to production, I'll confirm `og:image` reads `https://r
 
 ## Vercel projects: which one to disconnect
 
-**Probably none.** GitHub shows two production deployment records for commit `ad2be25`, but both belong to the same project:
+**Two Vercel projects are connected to this repo.** Pushing the redesign branch started a build in each of them:
 
-| GitHub environment label | Created (UTC) | Deployment URL |
+| Project | Serves the live site? | Evidence |
 |---|---|---|
-| Production | Aug 6, 01:45 | `rose-revenue-site-gka99oup8-pauls-projects-50a28006.vercel.app` |
-| Production – rose-revenue-site | Aug 6, 01:59 | `rose-revenue-site-nyal1flor-pauls-projects-50a28006.vercel.app` |
+| **rose-revenue-site** | **Yes. Keep it.** | rose-revenue.com and `rose-revenue-site.vercel.app` serve the identical deployment (`dpl_56d77bE1…` in both pages' asset URLs). |
+| **rose-revenue** | No, it's a leftover | Its production URL, `rose-revenue.vercel.app`, returns **404**. That fits it being the project with the wrong framework preset. |
 
-Vercel deployment URLs start with the project name, and both start with `rose-revenue-site`. So these are two deploys of the same commit 14 minutes apart. That matches fixing the framework preset and redeploying. The live site (`rose-revenue-site.vercel.app` and rose-revenue.com) is served by **rose-revenue-site**.
+**To disconnect (don't delete):**
+1. In the **pauls-projects** team, open project **rose-revenue**. Check the name carefully: it's the one *without* `-site`.
+2. Go to **Settings → Git**, click **Disconnect** next to `dpaulheintz/rose-revenue`, and confirm.
+3. Future pushes then build only once, in **rose-revenue-site**.
 
-**How to double-check (30 seconds; I can't list your Vercel projects from here):**
-1. Open the **pauls-projects** team's project list.
-2. Any project *other than* **rose-revenue-site** whose Git repository is `dpaulheintz/rose-revenue` is a leftover. Go to **Settings → Git → Disconnect** on that one only.
-3. **Don't touch rose-revenue-site.**
+Deleting the leftover project is optional and can wait. Leave **rose-revenue-site** exactly as it is.
