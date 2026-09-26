@@ -90,7 +90,7 @@ export default function Home() {
 
       <main id="main" className="relative">
         {/* ============================ 1 · HERO — dusk ============================ */}
-        <section id="top" className="relative flex min-h-[88svh] flex-col">
+        <section id="top" className="snap-flush relative flex min-h-[88svh] flex-col">
           <div className="wrap w-full">
             <header className="pt-7 sm:pt-9">
               <Wordmark />
@@ -131,7 +131,7 @@ export default function Home() {
         {/* z-[55] lifts this world above the grain: it's meant to feel flat. */}
         <section aria-labelledby="pile-title" className="world-cold relative z-[55]">
           <div className="band band-dusk-to-cold" aria-hidden="true" />
-          <div className="bg-cold-bg pt-6 pb-20 text-cold-ink lg:pb-28">
+          <div className="snap-flush bg-cold-bg pt-6 pb-20 text-cold-ink lg:pb-28">
             <div className="wrap grid gap-12 lg:grid-cols-[5fr_7fr] lg:gap-16">
               <div>
                 <h2 id="pile-title" className="h-cold">
@@ -150,7 +150,7 @@ export default function Home() {
         </section>
 
         {/* ===================== 3 · ONE PLACE — warmth returns ===================== */}
-        <section aria-labelledby="one-title" className="bg-night pt-6 pb-20 lg:pb-30">
+        <section aria-labelledby="one-title" className="snap-flush bg-night pt-6 pb-20 lg:pb-30">
           <div className="wrap">
             <Reveal>
               <h2 id="one-title" className="h-section max-w-[13ch] text-paper">
@@ -175,7 +175,7 @@ export default function Home() {
         {/* =========================== 4 · HOW IT WORKS =========================== */}
         <section
           aria-labelledby="how-title"
-          className="bg-[linear-gradient(180deg,var(--color-night),var(--color-violet))] py-20 lg:py-30"
+          className="snap-flush bg-[linear-gradient(180deg,var(--color-night),var(--color-violet))] py-20 lg:py-30"
         >
           <div className="wrap">
             <div className="grid gap-12 lg:grid-cols-[5fr_7fr] lg:gap-16">
@@ -213,7 +213,7 @@ export default function Home() {
         {/* ========================== 5 · ALSO INCLUDED ========================== */}
         <section
           aria-labelledby="also-title"
-          className="bg-[linear-gradient(180deg,var(--color-violet),var(--color-plum))] py-20 lg:py-30"
+          className="snap-flush bg-[linear-gradient(180deg,var(--color-violet),var(--color-plum))] py-20 lg:py-30"
         >
           <div className="wrap grid gap-12 lg:grid-cols-[5fr_7fr] lg:gap-16">
             <Reveal>
@@ -239,7 +239,7 @@ export default function Home() {
         </section>
 
         {/* ===================== 6 · BUILT IN THE MIDWEST — full dusk ===================== */}
-        <section aria-labelledby="midwest-title" className="relative overflow-hidden bg-plum">
+        <section aria-labelledby="midwest-title" className="snap-flush relative overflow-hidden bg-plum">
           <Image
             src="/section-band.webp"
             alt=""
@@ -279,7 +279,7 @@ export default function Home() {
         </section>
 
         {/* ============================ 7 · STRAIGHT ANSWERS ============================ */}
-        <section aria-labelledby="answers-title" className="bg-plum py-20 lg:py-30">
+        <section aria-labelledby="answers-title" className="snap-flush bg-plum py-20 lg:py-30">
           <div className="wrap grid gap-12 lg:grid-cols-[5fr_7fr] lg:gap-16">
             <Reveal>
               <h2 id="answers-title" className="h-section text-paper">
@@ -309,7 +309,7 @@ export default function Home() {
         </section>
 
         {/* ================================ 8 · ABOUT ================================ */}
-        <section aria-labelledby="about-title" className="bg-plum pb-20 lg:pb-30">
+        <section aria-labelledby="about-title" className="snap bg-plum pb-20 lg:pb-30">
           <div className="wrap grid gap-8 lg:grid-cols-[5fr_7fr] lg:gap-16">
             <Reveal>
               <h2 id="about-title" className="h-section text-paper">
@@ -328,7 +328,7 @@ export default function Home() {
         {/* ===================== 9 · LET'S TALK — the sunset reassembles ===================== */}
         <section id="booking" aria-labelledby="booking-title" className="relative scroll-mt-4">
           <div className="band band-plum-to-sky" aria-hidden="true" />
-          <div className="bg-[linear-gradient(180deg,rgb(2_13_2/0.35),rgb(2_13_2/0.55)_45%,rgb(2_13_2/0.85))] pb-20 lg:pb-30">
+          <div className="snap bg-[linear-gradient(180deg,rgb(2_13_2/0.35),rgb(2_13_2/0.55)_45%,rgb(2_13_2/0.85))] pb-20 lg:pb-30">
             <div className="wrap">
               <h2 id="booking-title" className="h-section max-w-[16ch] text-paper">
                 Book a free <span className="whitespace-nowrap">15-minute</span> call today.

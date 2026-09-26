@@ -34,11 +34,14 @@ const description =
 const shareTitle = "Custom tools for Midwest small businesses — Rose Revenue";
 const shareDescription =
   "Your customers, your numbers, your projects. One place, built around how you run, and you own it.";
+// Rendered from docs/redesign/og/og.html. JPEG for the widest support in
+// texting apps; a new filename also makes caches fetch it fresh.
 const shareImage = {
-  url: "/og.webp",
+  url: "/og.jpg",
   width: 1200,
-  height: 632,
-  alt: "Rose Revenue — a coral path winding through green hills at dusk",
+  height: 630,
+  type: "image/jpeg",
+  alt: "Rose Revenue: We build the tools your business wishes existed.",
 };
 
 export const metadata: Metadata = {
