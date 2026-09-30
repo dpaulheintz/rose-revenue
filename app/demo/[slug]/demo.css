@@ -1,0 +1,198 @@
+/* Prospect-demo styles. Everything is scoped under .demo-root so nothing
+   leaks into (or depends on) the marketing site. Colors come from the demo
+   config as --d-* custom properties set on .demo-root. */
+
+/* Same order Tailwind declares; stated here too so it holds whichever stylesheet loads first. */
+@layer theme, base, components, utilities;
+
+.demo-root {
+  min-height: 100dvh;
+  background: var(--d-bg);
+  color: var(--d-text);
+  font-family: var(--font-demo-body), "Roboto Condensed", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  /* Sit above the marketing grain overlay (z 50) if it were ever present. */
+  position: relative;
+  z-index: 60;
+  isolation: isolate;
+}
+
+.demo-root ::selection {
+  background: var(--d-accent);
+  color: var(--d-on-accent);
+}
+
+.demo-root :where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--d-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Component classes live in the `components` layer so Tailwind utilities on the
+   same element win (e.g. pl-10 on a .demo-input). */
+@layer components {
+.demo-display {
+  font-family: var(--font-demo-display), "Saira Condensed", system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Section titles get the short amber rule Iron Wolf uses under its headings. */
+.demo-rule::after {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 3px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: var(--d-accent);
+}
+
+/* Brushed-steel header, a nod to the brand site's header. */
+.demo-steel {
+  background:
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.06) 0 1px, rgb(0 0 0 / 0.03) 1px 3px),
+    linear-gradient(180deg, var(--d-steel-1), var(--d-steel-2));
+  color: #231f20;
+}
+
+.demo-card {
+  background: var(--d-panel);
+  border: 1px solid var(--d-line);
+  border-radius: 14px;
+}
+
+/* Scroll containers: tables, kanban, maintenance board. The page itself never scrolls sideways. */
+.demo-scroll-x {
+  /* relative: makes this the containing block for visually-hidden (sr-only,
+     position:absolute) labels inside, so they're clipped here instead of
+     escaping and widening the whole page. */
+  position: relative;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--d-line) transparent;
+}
+
+.demo-snap {
+  scroll-snap-type: x mandatory;
+}
+
+.demo-snap > * {
+  scroll-snap-align: start;
+}
+
+@media (min-width: 1024px) {
+  .demo-snap {
+    scroll-snap-type: x proximity;
+  }
+}
+
+.demo-input {
+  min-height: 44px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--d-line);
+  background: var(--d-bg);
+  color: var(--d-text);
+  padding: 0 12px;
+  font: inherit;
+}
+
+.demo-input::placeholder {
+  color: var(--d-muted);
+}
+
+select.demo-input {
+  appearance: none;
+  padding-right: 32px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--d-muted) 50%), linear-gradient(135deg, var(--d-muted) 50%, transparent 50%);
+  background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+textarea.demo-input {
+  padding: 10px 12px;
+  min-height: 96px;
+  resize: vertical;
+}
+
+/* Native <dialog> as modal and as drawer/bottom sheet. */
+.demo-dialog {
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--d-line);
+  border-radius: 16px;
+  background: var(--d-panel);
+  color: var(--d-text);
+  width: min(560px, calc(100vw - 24px));
+  max-height: min(88dvh, 820px);
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.7);
+}
+
+.demo-dialog::backdrop {
+  background: rgb(10 8 8 / 0.62);
+}
+
+.demo-dialog.demo-drawer {
+  margin: 0 0 0 auto;
+  height: 100dvh;
+  max-height: 100dvh;
+  width: min(520px, 100vw);
+  border-radius: 16px 0 0 16px;
+}
+
+@media (max-width: 767px) {
+  .demo-dialog {
+    margin: auto 0 0;
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: 18px 18px 0 0;
+    max-height: 90dvh;
+  }
+
+  .demo-dialog.demo-drawer {
+    margin: auto 0 0;
+    height: auto;
+    max-height: 92dvh;
+    width: 100vw;
+    border-radius: 18px 18px 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .demo-dialog[open] {
+    animation: demo-rise 180ms ease-out;
+  }
+
+  .demo-toast {
+    animation: demo-rise 200ms ease-out;
+  }
+}
+
+@keyframes demo-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Drag ghost for the kanban. */
+.demo-ghost {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  transform: rotate(-2deg);
+  box-shadow: 0 20px 50px -12px rgb(0 0 0 / 0.75);
+}
+
+.demo-noselect {
+  user-select: none;
+  -webkit-user-select: none;
+}
+}

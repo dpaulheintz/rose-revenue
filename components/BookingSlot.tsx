@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
+import { CAL_BOOKING_URL } from "@/lib/booking";
 
 // The Cal.com embed and its configuration live, unchanged, in BookingEmbed.
 // This wrapper only decides *when* to mount it, so ~2 MB of calendar
@@ -9,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 const BookingEmbed = dynamic(() => import("./BookingEmbed"), { ssr: false });
 
 const CAL_NAMESPACE = "discovery-call"; // must match BookingEmbed
-const BOOKING_PAGE = "https://cal.com/paul-heintzman-kzlgtl/discovery-call";
 
 export default function BookingSlot() {
   const slot = useRef<HTMLDivElement>(null);
@@ -81,7 +81,7 @@ export default function BookingSlot() {
           <p className="mt-auto pt-6 text-[14px] text-muted">
             Taking a while?{" "}
             <a
-              href={BOOKING_PAGE}
+              href={CAL_BOOKING_URL}
               target="_blank"
               rel="noopener"
               className="text-coral underline underline-offset-4"

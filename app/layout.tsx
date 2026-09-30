@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import SiteOnly from "@/components/SiteOnly";
 import "./globals.css";
 
 const geist = Geist({
@@ -77,9 +78,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         {children}
-        {/* Grain: fixed, tiling, non-interactive noise across the whole page. */}
-        <div className="grain-overlay" aria-hidden="true" />
-        <Analytics />
+        <SiteOnly>
+          {/* Grain: fixed, tiling, non-interactive noise across the whole page. */}
+          <div className="grain-overlay" aria-hidden="true" />
+          <Analytics />
+        </SiteOnly>
       </body>
     </html>
   );

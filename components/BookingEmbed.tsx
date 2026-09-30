@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Cal, { getCalApi } from "@calcom/embed-react";
+import { CAL_LINK } from "@/lib/booking";
 
 /**
  * BookingEmbed — live Cal.com inline embed for the discovery call.
@@ -13,9 +14,8 @@ import Cal, { getCalApi } from "@calcom/embed-react";
  *   - surfaces nudged toward the page's ink/teal tones so the widget
  *     reads as part of the page rather than a bolted-on iframe
  *
- * To point at a different event, change CAL_LINK (the path after cal.com).
+ * To point at a different event, change CAL_LINK in lib/booking.ts.
  */
-const CAL_LINK = "paul-heintzman-kzlgtl/discovery-call";
 const NAMESPACE = "discovery-call";
 
 // Palette tokens mirrored from globals.css so the embed matches the site.
