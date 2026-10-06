@@ -9,7 +9,7 @@ const TONE: Record<Tone, string> = {
   bad: "bg-[color-mix(in_oklab,var(--d-bad)_18%,transparent)] text-(--d-bad)",
   warn: "bg-[color-mix(in_oklab,var(--d-warn)_18%,transparent)] text-(--d-warn)",
   accent: "bg-[color-mix(in_oklab,var(--d-accent)_20%,transparent)] text-(--d-accent)",
-  info: "bg-[color-mix(in_oklab,#8fb4d9_18%,transparent)] text-[#a9c7e6]",
+  info: "bg-[color-mix(in_oklab,var(--d-info)_16%,transparent)] text-(--d-info)",
   neutral: "bg-(--d-panel2) text-(--d-muted)",
 };
 

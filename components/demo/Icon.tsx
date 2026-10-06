@@ -4,9 +4,7 @@ import type { IconName } from "@/demos/types";
 const PATHS: Record<IconName, string> = {
   home: "M3 11.5 12 4l9 7.5M5.5 10v10h13V10M10 20v-5h4v5",
   users: "M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.35M15.5 4.2a3.5 3.5 0 0 1 0 6.6",
-  gauge: "M4 16a8 8 0 1 1 16 0M12 16l4-5M12 16h.01M7 16h1M16 16h1",
   chart: "M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-8M20 16v-3",
-  ranch: "M3 20V10l9-6 9 6v10M3 20h18M9 20v-6h6v6M12 4v3",
   wrench: "M14.5 6.5a4 4 0 0 0 5 5l-8.8 8.8a2.1 2.1 0 0 1-3-3l8.8-8.8a4 4 0 0 0-2-2ZM16 3.5l-2 3 3.5 3.5 3-2",
   board: "M4 5h4v14H4zM10 5h4v9h-4zM16 5h4v6h-4z",
   more: "M5 12h.01M12 12h.01M19 12h.01",
@@ -23,9 +21,20 @@ const PATHS: Record<IconName, string> = {
   arrow: "M5 12h14M13 6l6 6-6 6",
   table: "M4 5h16v14H4zM4 10h16M4 15h16M10 5v14",
   columns: "M4 5h5v14H4zM10.5 5h5v14h-5zM17 5h3v14h-3z",
-  camera: "M4 8h3l2-2.5h6L17 8h3v11H4zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z",
   sort: "M8 4v16M8 20l-3-3M8 20l3-3M16 20V4M16 4l-3 3M16 4l3 3",
-  music: "M9 18V6l10-2v12M9 18a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM19 16a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z",
+  box: "M4 8 12 4l8 4v8l-8 4-8-4V8ZM4 8l8 4 8-4M12 12v8",
+  truck: "M3 6h11v10H3zM14 9h4l3 3.5V16h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
+  leaf: "M5 19c0-8 5-14 15-14 0 10-6 15-13 15M5 19l7-7",
+  cow: "M6 8 3.5 6M18 8l2.5-2M7 7h10l1 6c0 4-2.5 7-6 7s-6-3-6-7l1-6ZM9.5 16.5h.01M14.5 16.5h.01M9.5 11h.01M14.5 11h.01",
+  egg: "M12 3c3.5 0 6.5 5.5 6.5 10a6.5 6.5 0 0 1-13 0C5.5 8.5 8.5 3 12 3Z",
+  flask: "M9 3h6M10 3v6l-5.5 9.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3M7.5 15h9",
+  chat: "M4 5h16v11H9l-5 4V5ZM8 9.5h8M8 12.5h5",
+  sun: "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4",
+  drop: "M12 3.5 6.5 11a6.5 6.5 0 1 0 11 0L12 3.5Z",
+  clock: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3 2",
+  pin: "M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
+  spark: "M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6",
+  move: "M4 12h16M16 8l4 4-4 4M8 8l-4 4 4 4",
 };
 
 export default function Icon({ name, size = 20, className = "", label }: { name: IconName; size?: number; className?: string; label?: string }) {

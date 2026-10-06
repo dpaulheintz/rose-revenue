@@ -1,36 +1,34 @@
 import type { DemoConfig } from "@/demos/types";
 
-/** Generic paw print (placeholder until the real logo drops in). */
-export function Paw({ size = 28, className = "" }: { size?: number; className?: string }) {
+/** Generic blade-of-grass mark (not the prospect's logo). */
+export function GrassMark({ size = 28, className = "" }: { size?: number; className?: string }) {
   return (
     <svg viewBox="0 0 32 32" width={size} height={size} className={className} aria-hidden="true" fill="currentColor">
-      <ellipse cx="9" cy="10" rx="3" ry="4" transform="rotate(-15 9 10)" />
-      <ellipse cx="15.5" cy="6.8" rx="3" ry="4.1" />
-      <ellipse cx="22" cy="10" rx="3" ry="4" transform="rotate(15 22 10)" />
-      <ellipse cx="26" cy="16.5" rx="2.6" ry="3.4" transform="rotate(30 26 16.5)" />
-      <path d="M15.5 14c-4.2 0-8.5 5.3-8.5 9.1 0 2.4 1.8 3.6 4 3.6 1.9 0 2.9-1.1 4.5-1.1s2.6 1.1 4.5 1.1c2.2 0 4-1.2 4-3.6 0-3.8-4.3-9.1-8.5-9.1Z" />
+      <path d="M15.2 29c-.6-6.4-2.6-12.3-7.7-18.1 4.6 3 7.6 7.3 9.3 12.6.3-6.7 2.1-13.3 6-19.5-1.7 6.6-2.5 13.4-2.2 20.5l.1 4.5Z" />
+      <path d="M21.5 29c.4-4.1 2-7.6 5.3-10.4-1.9 3.1-2.9 6.6-3 10.4Z" opacity=".7" />
+      <path d="M11.4 29c-.9-3-2.6-5.4-5.3-7.2 3.6.9 5.9 3.4 7.3 7.2Z" opacity=".7" />
     </svg>
   );
 }
 
-/** Typeset wordmark. Paul swaps in the real logo later. */
+/** Typeset wordmark plus the generic mark. Swap for the real logo later. */
 export function Wordmark({ cfg, compact = false }: { cfg: DemoConfig; compact?: boolean }) {
   const [top, bottom] = cfg.company.wordmark;
   return (
-    <span className="flex items-center gap-2.5" aria-label={cfg.company.name}>
-      <Paw size={compact ? 26 : 30} className="text-[#231f20]" />
+    <span className="flex items-center gap-2" aria-label={cfg.company.name}>
+      <GrassMark size={compact ? 26 : 30} className="text-(--d-accent)" />
       <span className="flex flex-col leading-none" aria-hidden="true">
-        <span className={`demo-display ${compact ? "text-[19px]" : "text-[22px]"} tracking-[0.08em] text-[#231f20]`}>{top}</span>
-        <span className="demo-display mt-0.5 text-[9.5px] tracking-[0.22em] text-[#4a4344]">{bottom}</span>
+        <span className={`demo-wordmark ${compact ? "text-[16px]" : "text-[18px]"}`}>{top}</span>
+        <span className="mt-1 text-[9.5px] font-medium tracking-[0.28em] uppercase opacity-75">{bottom}</span>
       </span>
     </span>
   );
 }
 
 /** "Prepared by Rose Revenue", with the pixel sun inlined (no image request). */
-export function PreparedBy({ className = "", dark = false }: { className?: string; dark?: boolean }) {
+export function PreparedBy({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 text-[12px] ${dark ? "text-[#3b3536]" : "text-(--d-muted)"} ${className}`}>
+    <span className={`inline-flex items-center gap-1.5 text-[12px] ${className}`}>
       <svg viewBox="0 0 12 9" width="16" height="12" aria-hidden="true" shapeRendering="crispEdges">
         <g fill="#fc5f60">
           <rect x="4" y="0" width="4" height="1" /><rect x="2" y="1" width="8" height="1" /><rect x="1" y="2" width="10" height="1" />

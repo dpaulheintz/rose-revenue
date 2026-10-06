@@ -41,7 +41,7 @@
   line-height: 1;
 }
 
-/* Section titles get the short amber rule Iron Wolf uses under its headings. */
+/* Section titles get a short accent rule under them. */
 .demo-rule::after {
   content: "";
   display: block;
@@ -52,12 +52,12 @@
   background: var(--d-accent);
 }
 
-/* Brushed-steel header, a nod to the brand site's header. */
-.demo-steel {
-  background:
-    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.06) 0 1px, rgb(0 0 0 / 0.03) 1px 3px),
-    linear-gradient(180deg, var(--d-steel-1), var(--d-steel-2));
-  color: #231f20;
+/* Typeset wordmark (stand-in for the real logo). */
+.demo-wordmark {
+  font-family: var(--font-demo-display), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .demo-card {

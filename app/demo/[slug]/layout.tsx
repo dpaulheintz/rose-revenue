@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: LayoutProps<"/demo/[slug]">):
   };
 }
 
-export const viewport: Viewport = { themeColor: "#231f20" };
+export const viewport: Viewport = { themeColor: "#1f2a1f" };
 
 export default async function DemoLayout({ children, params }: LayoutProps<"/demo/[slug]">) {
   const { slug } = await params;
@@ -43,8 +43,9 @@ export default async function DemoLayout({ children, params }: LayoutProps<"/dem
   const t = cfg.theme;
   const vars = {
     "--d-bg": t.bg, "--d-panel": t.panel, "--d-panel2": t.panel2, "--d-line": t.line, "--d-text": t.text, "--d-muted": t.muted,
-    "--d-accent": t.accent, "--d-on-accent": t.onAccent, "--d-good": t.good, "--d-bad": t.bad, "--d-warn": t.warn,
-    "--d-steel-1": t.steel[0], "--d-steel-2": t.steel[1],
+    "--d-accent": t.accent, "--d-on-accent": t.onAccent, "--d-header": t.header, "--d-on-header": t.onHeader,
+    "--d-good": t.good, "--d-bad": t.bad, "--d-warn": t.warn, "--d-info": t.info,
+    ...Object.fromEntries(t.chart.map((c, i) => [`--d-c${i + 1}`, c])),
   } as CSSProperties;
 
   return (
