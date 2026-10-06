@@ -29,6 +29,7 @@ export type Theme = {
 export type DemoModule = {
   key: string;
   label: string;
+  short?: string; // phone tab label
   icon: IconName;
   path: string; // "" = demo home
   phone?: boolean; // one of the four phone tabs (the rest live under More)
@@ -36,6 +37,7 @@ export type DemoModule = {
 };
 
 export type DemoConfig = {
+  kind: "farm";
   slug: string;
   seed: number;
   timeZone: string;

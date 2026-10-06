@@ -89,7 +89,7 @@ export default function DemoShell({ children }: { children: ReactNode }) {
               <li key={m.key}>
                 <Link href={href(m.path)} aria-current={on ? "page" : undefined} className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[11.5px] font-medium ${on ? "text-(--d-accent)" : "text-(--d-muted)"}`}>
                   <Icon name={m.icon} size={22} />
-                  {m.label}
+                  {m.short ?? m.label}
                 </Link>
               </li>
             );
