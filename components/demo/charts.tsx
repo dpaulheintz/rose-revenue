@@ -80,7 +80,7 @@ export function ColumnChart({
       <div className="mt-1.5 flex gap-[3px] sm:gap-1.5" aria-hidden="true">
         {columns.map((c, i) => (
           <span key={c.label + i} className={`min-w-0 flex-1 truncate text-center text-[11.5px] ${i === active ? "text-(--d-text)" : "text-(--d-muted)"}`}>
-            {i % labelEvery === 0 || i === columns.length - 1 ? c.label.split(" ")[0] : ""}
+            {i % labelEvery === 0 || i === columns.length - 1 ? (labelEvery > 1 ? c.label : c.label.split(" ")[0]) : ""}
           </span>
         ))}
       </div>

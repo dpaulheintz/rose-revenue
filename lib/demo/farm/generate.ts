@@ -28,10 +28,20 @@ const ORDER_SEASON = [0.92, 0.86, 0.9, 0.95, 1, 1, 0.94, 0.94, 1.02, 1.12, 1.22,
 const MILK_SEASON = [0.84, 0.84, 0.9, 1.06, 1.16, 1.08, 0.95, 0.92, 0.97, 1, 0.95, 0.87];
 // Daylight effect on lay rate (no supplemental light).
 const DAYLIGHT = [0.62, 0.68, 0.8, 0.92, 0.98, 1, 1, 0.97, 0.88, 0.74, 0.64, 0.6];
-// Pasture regrowth, inches per day.
-const GROWTH = [0, 0, 0.05, 0.25, 0.3, 0.22, 0.14, 0.14, 0.18, 0.13, 0.05, 0];
 const HI = [35, 39, 50, 62, 72, 80, 84, 82, 76, 64, 51, 40];
 const LO = [20, 22, 30, 40, 50, 59, 63, 61, 54, 43, 34, 25];
+
+// Meat demand relative to its listed popularity (tuned so the freezer usually holds stock).
+const MEAT = new Set(["beef", "pork", "lamb", "broiler", "bundle"]);
+const MEAT_DEMAND = 0.7;
+
+/** Day-length effect, interpolated daily between mid-month values. */
+function daylight(d: Ymd) {
+  const m = monthIndex(d);
+  const day = +d.slice(8, 10);
+  const [a, b, f] = day < 15 ? [(m + 11) % 12, m, (day + 15) / 30] : [m, (m + 1) % 12, (day - 15) / 30];
+  return DAYLIGHT[a] + (DAYLIGHT[b] - DAYLIGHT[a]) * f;
+}
 
 /** Wood's lactation curve, normalized to 1 at the day-50 peak. */
 const lactation = (dim: number) => Math.pow(Math.max(dim, 1) / 50, 0.2) * Math.exp(-0.004 * (dim - 50));
@@ -154,7 +164,8 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
     const dim = diffDays(d, last);
     if (dim > 400) return 0;
     const dip = c.dip && diffDays(anchor, d) >= 1 && diffDays(anchor, d) <= 3 ? 0.62 : 1;
-    return c.peak * lactation(dim) * MILK_SEASON[monthIndex(d)] * dip;
+    const wobble = 0.94 + ((hash(c.id + d) % 1000) / 1000) * 0.12; // day-to-day variation, ±6%
+    return c.peak * lactation(dim) * MILK_SEASON[monthIndex(d)] * dip * wobble;
   };
   // Calves on milk by day (each calf drinks whole milk for its first 90 days).
   for (const c of cows) {
@@ -182,7 +193,7 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
   for (let d = onOrAfter(addDays(simStart, -40), 1); d <= addDays(anchor, 200); ) {
     const m = monthIndex(d);
     const inSeason = m >= 5 && m <= 11;
-    const head = inSeason ? 2 + (pk.chance(0.45) ? 1 : 0) : 2;
+    const head = inSeason ? 2 + (pk.chance(0.7) ? 1 : 0) : 2 + (pk.chance(0.3) ? 1 : 0);
     const animals: string[] = [];
     let hangingTotal = 0;
     for (let h = 0; h < head; h++) {
@@ -198,7 +209,7 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
   // Pork: woodlot hogs about every four weeks.
   let hogNo = 1;
   for (let d = onOrAfter(addDays(simStart, -30), 2); d <= addDays(anchor, 200); d = onOrAfter(addDays(d, 28), 2)) {
-    const head = pk.chance(0.5) ? 3 : 2;
+    const head = pk.chance(0.75) ? 3 : 2;
     const hanging = pk.int(195, 225) * head;
     batches.push({ id: `pk-${d}`, kind: "pork", lot: `PK-${yy(d)}`, kill: d, back: addDays(d, 10), head, animals: Array.from({ length: head }, () => `H${hogNo++}`), yields: yieldsFor("pork", hanging / 210, pk) });
   }
@@ -239,7 +250,7 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
     const wk = diffDays(d, f.hatched) / 7;
     if (wk < 20) return 0;
     const base = wk < 26 ? 0.3 + ((wk - 20) / 6) * 0.58 : clamp(0.9 - 0.0028 * (wk - 30), 0.5, 0.9);
-    return base * DAYLIGHT[monthIndex(d)] * rng.jitter(0.04);
+    return base * daylight(d) * rng.jitter(0.04);
   };
   const hensOn = (f: Flock, d: Ymd) => (d < f.layingFrom ? (d < f.hatched ? 0 : f.hens + 8) : Math.round(f.hens + 8 - 8 * clamp(diffDays(d, f.layingFrom) / 900, 0, 1)));
 
@@ -271,7 +282,8 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
     const stops = owner ? cu.chance(0.06) : cu.chance(0.22);
     const earliestStop = addDays(joined < simStart ? simStart : joined, 45);
     const stoppedOn = stops && earliestStop < addDays(anchor, -21) ? addDays(earliestStop, cu.int(0, diffDays(addDays(anchor, -21), earliestStop))) : null;
-    const priorSpend = joined < simStart ? Math.round((diffDays(simStart, joined) / cadence) * 74 * cu.jitter(0.3)) : 0;
+    // Spend before the simulated window: at most ~5 years of history, smaller baskets back then.
+    const priorSpend = joined < simStart ? Math.round((Math.min(diffDays(simStart, joined), 5 * 365) / (cadence * 1.4)) * 58 * cu.jitter(0.3)) : 0;
     let herdshare: Customer["herdshare"] = null;
     if (owner) {
       const shares = cu.weighted([1, 2, 3], (s) => (s === 1 ? 0.6 : s === 2 ? 0.3 : 0.1));
@@ -463,19 +475,21 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
       return !h || h.since > d || (c.stoppedOn && c.stoppedOn < d) ? s : s + h.gallons / 7;
     }, 0);
 
-  // What the shelf could cover, including bundles built from components.
-  const parts = new Map(seed.skus.filter((s) => s.components).map((s) => [s.id, Object.entries(s.components!)]));
-  const canSell = (id: string, extraHeld: Record<string, number> = {}) => {
-    const comp = parts.get(id);
-    if (!comp) return stock[id] - (extraHeld[id] ?? 0);
-    let n = Infinity;
-    for (const [cid, q] of comp) n = Math.min(n, Math.floor((stock[cid] - (extraHeld[cid] ?? 0)) / q));
-    return n;
-  };
-  const take = (id: string, qty: number) => {
-    const s = sku.get(id)!;
-    if (s.components) for (const [cid, q] of Object.entries(s.components)) stock[cid] -= q * qty;
-    else stock[id] -= qty;
+  const canSell = (id: string, extraHeld: Record<string, number> = {}) => stock[id] - (extraHeld[id] ?? 0);
+  const take = (id: string, qty: number) => { stock[id] -= qty; };
+  // Bundles are pre-packed from loose cuts when beef comes back, leaving a floor
+  // of each cut for individual sale. Fall bundles get packed deep Oct–Dec.
+  const bundles = seed.skus.filter((s) => s.components);
+  const packBundles = (d: Ymd) => {
+    const m = monthIndex(d);
+    for (const b of bundles) {
+      const target = Math.round(b.par * Math.min(1, (b.season?.[m] ?? 1) / 1.6));
+      let n = Math.max(0, target - stock[b.id]);
+      for (const [cid, q] of Object.entries(b.components!)) n = Math.min(n, Math.floor(Math.max(0, stock[cid] - sku.get(cid)!.par * 0.4) / q));
+      if (n <= 0) continue;
+      for (const [cid, q] of Object.entries(b.components!)) stock[cid] -= q * n;
+      add(b.id, n, d);
+    }
   };
 
   const recentFrom = addDays(anchor, -45);
@@ -493,9 +507,7 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
     // Hold what this order has already taken, so a bundle and its own cuts can't double-book.
     const hold = { ...held };
     const reserve = (id: string, qty: number) => {
-      const s = sku.get(id)!;
-      if (s.components) for (const [cid, q] of Object.entries(s.components)) hold[cid] = (hold[cid] ?? 0) + q * qty;
-      else hold[id] = (hold[id] ?? 0) + qty;
+      hold[id] = (hold[id] ?? 0) + qty;
     };
     if (it.kind === "turkey") {
       const lb = turkeyWeight.get(`${it.customer}:${d}`) ?? 17;
@@ -506,7 +518,10 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
     if (it.channel === "wholesale") {
       const a = accounts.find((x) => x.id === it.account)!;
       for (const [id, q] of Object.entries(a.standing)) {
-        const want = Math.max(1, Math.round(q * lr.jitter(0.18) * (sku.get(id)!.season?.[m] ?? 1) ** 0.5));
+        // Standing orders flex with the freezer: the farm calls ahead when a cut is thin.
+        const sk = sku.get(id)!;
+        const flex = sk.par > 0 ? Math.min(1, 0.25 + Math.max(0, canSell(id, hold)) / (1.5 * sk.par)) : 1;
+        const want = Math.max(1, Math.round(q * lr.jitter(0.18) * (sk.season?.[m] ?? 1) ** 0.5 * flex));
         const have = canSell(id, hold);
         const qty = Math.min(want, Math.max(0, have));
         if (qty < want && d >= recentFrom) stockouts.push({ sku: id, date: d, customer: null });
@@ -528,8 +543,10 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
     const weights = seed.skus.map((x) => {
       if (x.pop === 0 || (x.herdshareOnly && !owner) || (x.source === "bundle" && it.channel === "store")) return 0;
       let w = x.pop * (x.season?.[m] ?? 1);
-      if (x.par > 0) w *= Math.min(1, 0.2 + Math.max(0, canSell(x.id, hold)) / x.par);
-      else if (x.components) w *= Math.min(1, 0.2 + Math.max(0, canSell(x.id, hold)) / 6);
+      // Shoppers ease off as shelves thin (well before a cut is gone).
+      // A deep freezer gets featured ("specials"), nudging demand back up.
+      if (x.par > 0) w *= Math.min(x.components ? 1 : 1.4, 0.12 + Math.max(0, canSell(x.id, hold)) / (2 * x.par));
+      if (MEAT.has(x.source)) w *= MEAT_DEMAND;
       if (t?.favs.has(x.id)) w *= 3;
       if (x.source === "bundle") w *= t?.bundles ? 4 : 0.25;
       if (x.herdshareOnly) w *= 1.6;
@@ -568,7 +585,12 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
     const m = monthIndex(d);
 
     // 1) Supply lands.
-    for (const b of batches) if (b.back === d) for (const [id, n] of Object.entries(b.yields)) add(id, n, d);
+    let beefBack = false;
+    for (const b of batches) if (b.back === d) {
+      for (const [id, n] of Object.entries(b.yields)) add(id, n, d);
+      if (b.kind === "beef") beefBack = true;
+    }
+    if (beefBack || wd === 1) packBundles(d);
     for (const c of cheese) if (c.ready === d) add(c.sku, c.blocks, d);
     if (wd === 1 && diffDays(d, simStart) % 14 < 7) add("broth", Math.round(84 * dr.jitter(0.08)), d); // broth every other Monday
     if (diffDays(d, simStart) % 28 === 3) for (const s of seed.skus) if (s.source === "partner") add(s.id, Math.max(0, Math.round(s.par * 1.4) - stock[s.id]), d);
@@ -587,7 +609,7 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
     const calves = Math.min(calvesOnMilk(d) * 1.5, Math.max(0, gallons - herdshareGal) * 0.45);
     let butterGal = 0;
     if (wd === 2 || wd === 5) {
-      butterGal = Math.round(Math.min(24 * MILK_SEASON[m], Math.max(0, gallons - herdshareGal - calves) * 0.35));
+      butterGal = Math.round(Math.min(20 * MILK_SEASON[m], Math.max(0, gallons - herdshareGal - calves) * 0.35));
       const units = Math.round(butterGal / 1.05);
       add("butter", units, d);
       butter.push({ date: d, gallons: butterGal, units });
@@ -654,11 +676,7 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
     const it = intents[ii];
     if (it.date < anchor) continue;
     const lines = buildLines(it, it.date, committed).filter((l) => l.sku !== "ticket");
-    for (const l of lines) {
-      const s = sku.get(l.sku)!;
-      if (s.components) for (const [cid, q] of Object.entries(s.components)) committed[cid] = (committed[cid] ?? 0) + q * l.qty;
-      else committed[l.sku] = (committed[l.sku] ?? 0) + l.qty;
-    }
+    for (const l of lines) committed[l.sku] = (committed[l.sku] ?? 0) + l.qty;
     if (!lines.length) continue;
     const total = Math.round(lines.reduce((s, l) => s + l.qty * l.price, 0) * 100) / 100;
     orders.push({ id: `o${orderNo}`, no: orderNo++, date: it.date, channel: it.channel, customer: it.customer, account: it.account, where: it.where, lines, total, open: true });
@@ -702,7 +720,6 @@ export function buildFarm(slug: string, cfgSeed: number, seed: FarmSeed, anchor:
   /* ------------------------------ equipment ----------------------------- */
   const er = stream("equipment");
   const overdueIds = new Set(er.shuffle(seed.equipment.filter((e) => e.every <= 120).map((e) => e.id)).slice(0, 3));
-  const people = seed.people;
   const equipment: EquipmentItem[] = seed.equipment.map((e) => {
     const lastService = overdueIds.has(e.id) ? addDays(anchor, -(e.every + er.int(3, 16))) : addDays(anchor, -er.int(1, Math.max(2, e.every - 4)));
     const log: EquipmentItem["log"] = [];

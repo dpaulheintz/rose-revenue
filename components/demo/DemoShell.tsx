@@ -27,7 +27,7 @@ export default function DemoShell({ children }: { children: ReactNode }) {
 
       <header className="sticky top-0 z-40 bg-(--d-header) text-(--d-on-header)">
         <div className="flex h-16 items-center gap-3 px-4 lg:px-6">
-          <Link href={href(cfg.modules[0].path)} className="min-w-0 rounded-lg" aria-label={`${cfg.company.name} ${cfg.company.appName}, home`}>
+          <Link href={href(cfg.modules[0].path)} className="flex min-h-12 min-w-0 items-center rounded-lg" aria-label={`${cfg.company.name} ${cfg.company.appName}, home`}>
             <span className="sm:hidden"><Wordmark cfg={cfg} compact /></span>
             <span className="hidden sm:inline"><Wordmark cfg={cfg} /></span>
           </Link>

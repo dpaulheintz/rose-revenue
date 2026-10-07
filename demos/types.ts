@@ -6,7 +6,7 @@ export type IconName =
   | "home" | "users" | "chart" | "wrench" | "board" | "more" | "search" | "filter" | "x"
   | "plus" | "check" | "alert" | "calendar" | "phone" | "mail" | "grip" | "arrow" | "table"
   | "columns" | "sort" | "box" | "truck" | "leaf" | "cow" | "egg" | "flask" | "chat" | "sun"
-  | "drop" | "clock" | "pin" | "spark" | "move";
+  | "drop" | "clock" | "pin" | "spark" | "move" | "cloud" | "rain" | "jug";
 
 export type Theme = {
   bg: string; // app background

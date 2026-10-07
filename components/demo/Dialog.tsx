@@ -35,7 +35,7 @@ export default function Dialog({
               <h2 id={titleId} className="demo-display text-[20px] leading-tight">{title}</h2>
               {subtitle ? <div className="mt-1 text-[13.5px] text-(--d-muted)">{subtitle}</div> : null}
             </div>
-            <button type="button" onClick={onClose} className="-mr-2 grid size-11 shrink-0 place-items-center rounded-xl text-(--d-muted) hover:bg-(--d-panel2) hover:text-(--d-text)">
+            <button type="button" onClick={onClose} className="-mr-2 grid size-12 shrink-0 place-items-center rounded-xl text-(--d-muted) hover:bg-(--d-panel2) hover:text-(--d-text)">
               <Icon name="x" />
               <span className="sr-only">Close</span>
             </button>

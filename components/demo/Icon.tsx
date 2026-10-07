@@ -35,6 +35,9 @@ const PATHS: Record<IconName, string> = {
   pin: "M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
   spark: "M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6",
   move: "M4 12h16M16 8l4 4-4 4M8 8l-4 4 4 4",
+  jug: "M9 3h6v3l2.5 3.5V20a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1V9.5L9 6V3ZM6.5 13h11",
+  cloud: "M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.2 9.1 4.5 4.5 0 0 0 7 18Z",
+  rain: "M7 14h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.2 5.1 4.5 4.5 0 0 0 7 14ZM8 17l-1 3M12 17l-1 3M16 17l-1 3",
 };
 
 export default function Icon({ name, size = 20, className = "", label }: { name: IconName; size?: number; className?: string; label?: string }) {
