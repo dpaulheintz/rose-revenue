@@ -1,12 +1,13 @@
-import type { CSSProperties } from "react";
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { Aleo, IBM_Plex_Mono, Open_Sans } from "next/font/google";
+import { Aleo, Archivo_Black, IBM_Plex_Mono, Inter_Tight, Open_Sans } from "next/font/google";
 import { demoSlugs, getDemo } from "@/demos/registry";
 import { todayIn } from "@/lib/demo/dates";
 import DemoProvider from "@/components/demo/DemoProvider";
 import DemoShell from "@/components/demo/DemoShell";
 import FarmProvider from "@/components/demo/farm/FarmProvider";
+import ShopProvider from "@/components/demo/shop/ShopProvider";
+import { lookVars, themeVars } from "@/lib/demo/theme";
 import "./demo.css";
 
 // Headings: Aleo, the slab serif on the farm's own site. Body: Open Sans, from its store.
@@ -14,6 +15,10 @@ import "./demo.css";
 const display = Aleo({ subsets: ["latin"], weight: ["500", "600", "700", "800"], variable: "--font-demo-display", display: "swap" });
 const body = Open_Sans({ subsets: ["latin"], variable: "--font-demo-body", display: "swap" });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-demo-mono", display: "swap" });
+// Shop demos: a heavy grotesque for headings, a clean sans for the UI. Not preloaded on
+// other demos' pages (they never use them).
+const shopDisplay = Archivo_Black({ subsets: ["latin"], weight: "400", variable: "--font-shop-display", display: "swap", preload: false });
+const shopBody = Inter_Tight({ subsets: ["latin"], variable: "--font-shop-body", display: "swap", preload: false });
 
 // Regenerate hourly so "today" (and every date in the demo) stays current.
 export const revalidate = 3600;
@@ -36,27 +41,26 @@ export async function generateMetadata({ params }: LayoutProps<"/demo/[slug]">):
   };
 }
 
-export const viewport: Viewport = { themeColor: "#263421" };
+export async function generateViewport({ params }: LayoutProps<"/demo/[slug]">): Promise<Viewport> {
+  const cfg = getDemo((await params).slug);
+  return { themeColor: cfg?.look?.themeColor ?? "#263421" };
+}
 
 export default async function DemoLayout({ children, params }: LayoutProps<"/demo/[slug]">) {
   const { slug } = await params;
   const cfg = getDemo(slug);
   if (!cfg) notFound();
   const anchor = todayIn(cfg.timeZone);
-  const t = cfg.theme;
-  const vars = {
-    "--d-bg": t.bg, "--d-panel": t.panel, "--d-panel2": t.panel2, "--d-line": t.line, "--d-text": t.text, "--d-muted": t.muted,
-    "--d-accent": t.accent, "--d-on-accent": t.onAccent, "--d-header": t.header, "--d-on-header": t.onHeader,
-    "--d-good": t.good, "--d-bad": t.bad, "--d-warn": t.warn, "--d-info": t.info,
-    ...Object.fromEntries(t.chart.map((c, i) => [`--d-c${i + 1}`, c])),
-  } as CSSProperties;
+  const vars = { ...themeVars(cfg.theme), ...lookVars(cfg.look) };
+  const fonts = cfg.look?.fonts === "shop" ? `${shopDisplay.variable} ${shopBody.variable}` : `${display.variable} ${body.variable} ${mono.variable}`;
+  const Data = cfg.kind === "shop" ? ShopProvider : FarmProvider;
 
   return (
-    <div className={`demo-root ${display.variable} ${body.variable} ${mono.variable}`} style={vars}>
+    <div className={`demo-root ${fonts}`} style={vars}>
       <DemoProvider slug={slug} anchor={anchor}>
-        <FarmProvider slug={slug} anchor={anchor}>
+        <Data slug={slug} anchor={anchor}>
           <DemoShell>{children}</DemoShell>
-        </FarmProvider>
+        </Data>
       </DemoProvider>
     </div>
   );

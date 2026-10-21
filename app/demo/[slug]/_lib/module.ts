@@ -14,3 +14,8 @@ export async function requireModule(params: Promise<{ slug: string }>, key: stri
   const cfg = getDemo((await params).slug);
   if (!cfg?.modules.some((m) => m.key === key)) notFound();
 }
+
+/** Which family of modules this demo uses (shared routes render the matching one). */
+export async function demoKind(params: Promise<{ slug: string }>) {
+  return getDemo((await params).slug)!.kind;
+}

@@ -35,8 +35,8 @@
 @layer components {
 .demo-display {
   font-family: var(--font-demo-display), Georgia, serif;
-  font-weight: 700;
-  letter-spacing: -0.005em;
+  font-weight: var(--d-display-weight, 700);
+  letter-spacing: var(--d-display-tracking, -0.005em);
   line-height: 1.12;
 }
 
@@ -65,16 +65,16 @@
 /* Typeset wordmark (stand-in for the real logo). */
 .demo-wordmark {
   font-family: var(--font-demo-display), Georgia, serif;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-weight: var(--d-wordmark-weight, 600);
+  letter-spacing: var(--d-wordmark-tracking, 0.12em);
   text-transform: uppercase;
 }
 
 .demo-card {
   background: var(--d-panel);
   border: 1px solid var(--d-line);
-  border-radius: 18px;
-  box-shadow: 0 1px 0 rgb(34 48 30 / 0.04), 0 8px 24px -18px rgb(34 48 30 / 0.25);
+  border-radius: var(--d-radius, 18px);
+  box-shadow: var(--d-shadow, 0 1px 0 rgb(34 48 30 / 0.04), 0 8px 24px -18px rgb(34 48 30 / 0.25));
 }
 
 /* Scroll containers: tables, kanban, maintenance board. The page itself never scrolls sideways. */
@@ -206,4 +206,27 @@ textarea.demo-input {
   user-select: none;
   -webkit-user-select: none;
 }
+}
+
+/* Printing an invoice: only the invoice paper prints. */
+@media print {
+  .demo-root * {
+    visibility: hidden;
+  }
+
+  .demo-print,
+  .demo-print * {
+    visibility: visible;
+  }
+
+  .demo-print {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    box-shadow: none;
+  }
+
+  .demo-dialog::backdrop {
+    background: transparent;
+  }
 }

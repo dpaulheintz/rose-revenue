@@ -6,7 +6,8 @@ export type IconName =
   | "home" | "users" | "chart" | "wrench" | "board" | "more" | "search" | "filter" | "x"
   | "plus" | "check" | "alert" | "calendar" | "phone" | "mail" | "grip" | "arrow" | "table"
   | "columns" | "sort" | "box" | "truck" | "leaf" | "cow" | "egg" | "flask" | "chat" | "sun"
-  | "drop" | "clock" | "pin" | "spark" | "move" | "cloud" | "rain" | "jug";
+  | "drop" | "clock" | "pin" | "spark" | "move" | "cloud" | "rain" | "jug"
+  | "hammer" | "dollar" | "camera" | "shield" | "clipboard" | "pen" | "moon" | "eye" | "receipt" | "play" | "stop" | "image";
 
 export type Theme = {
   bg: string; // app background
@@ -36,8 +37,20 @@ export type DemoModule = {
   blurb?: string; // one line for the Overview's module index
 };
 
+/** Per-demo typography/shape knobs. Defaults reproduce the original demo look. */
+export type Look = {
+  themeColor: string; // browser chrome color
+  displayWeight?: number;
+  displayTracking?: string;
+  wordmarkWeight?: number;
+  wordmarkTracking?: string;
+  radius?: string; // card corner radius
+  shadow?: string; // card shadow
+  fonts?: "farm" | "shop"; // which loaded font set the demo uses
+};
+
 export type DemoConfig = {
-  kind: "farm";
+  kind: "farm" | "shop";
   slug: string;
   seed: number;
   timeZone: string;
@@ -47,7 +60,10 @@ export type DemoConfig = {
     appName: string; // shown in the header
     place: string;
   };
-  theme: Theme;
+  theme: Theme; // default theme
+  lightTheme?: Theme; // when present, the header offers a light/dark toggle (theme above = dark)
+  look?: Look;
+  brand?: { logo?: string; logoAlt?: string };
   copy: {
     ribbon: string;
     toast: string;

@@ -4,12 +4,15 @@ import { createContext, useCallback, useContext, useRef, useState, type ReactNod
 import { getDemo } from "@/demos/registry";
 import type { DemoConfig } from "@/demos/types";
 import type { Ymd } from "@/lib/demo/dates";
+import { themeVars } from "@/lib/demo/theme";
 
 type DemoCtx = {
   cfg: DemoConfig;
   anchor: Ymd;
   base: string; // e.g. "/demo/<slug>"
   notify: (message?: string) => void;
+  mode: "dark" | "light"; // only meaningful when cfg.lightTheme exists
+  toggleMode: () => void;
 };
 
 const Ctx = createContext<DemoCtx | null>(null);
@@ -27,6 +30,7 @@ export function useDemo() {
 export default function DemoProvider({ slug, anchor, children }: { slug: string; anchor: Ymd; children: ReactNode }) {
   const cfg = getDemo(slug)!;
   const [toasts, setToasts] = useState<Array<{ id: number; message: string }>>([]);
+  const [mode, setMode] = useState<"dark" | "light">("dark");
   const nextToast = useRef(1);
 
   const notify = useCallback(
@@ -39,8 +43,13 @@ export default function DemoProvider({ slug, anchor, children }: { slug: string;
   );
 
   return (
-    <Ctx.Provider value={{ cfg, anchor, base: `/demo/${slug}`, notify }}>
-      {children}
+    <Ctx.Provider value={{ cfg, anchor, base: `/demo/${slug}`, notify, mode, toggleMode: () => setMode((m) => (m === "dark" ? "light" : "dark")) }}>
+      {cfg.lightTheme ? (
+        // Themeable demos: swap the palette for everything below (dialogs and the FAB included).
+        <div className="contents" style={{ ...(mode === "light" ? themeVars(cfg.lightTheme) : {}), colorScheme: mode }}>{children}</div>
+      ) : (
+        children
+      )}
       <div aria-live="polite" role="status" className="pointer-events-none fixed inset-x-0 bottom-[84px] z-[120] flex flex-col items-center gap-2 px-4 md:bottom-6">
         {toasts.map((t) => (
           <div key={t.id} className="demo-toast pointer-events-auto flex max-w-md items-start gap-3 rounded-xl bg-(--d-header) px-4 py-3 text-[14px] text-(--d-on-header) shadow-2xl">

@@ -14,6 +14,19 @@ export function GrassMark({ size = 28, className = "" }: { size?: number; classN
 /** Typeset wordmark plus the generic mark. Swap for the real logo later. */
 export function Wordmark({ cfg, compact = false }: { cfg: DemoConfig; compact?: boolean }) {
   const [top, bottom] = cfg.company.wordmark;
+  if (cfg.brand?.logo) {
+    // The company's own logo, supplied by them; the typeset name beside it keeps it legible at header size.
+    return (
+      <span className="flex items-center gap-2.5" aria-label={cfg.company.name}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={cfg.brand.logo} alt="" width={compact ? 40 : 44} height={compact ? 40 : 44} className="shrink-0 rounded-full" />
+        <span className="flex flex-col leading-none" aria-hidden="true">
+          <span className={`demo-wordmark ${compact ? "text-[17px]" : "text-[19px]"}`}>{top}</span>
+          <span className="mt-1 text-[9.5px] font-semibold tracking-[0.24em] uppercase opacity-75">{bottom}</span>
+        </span>
+      </span>
+    );
+  }
   return (
     <span className="flex items-center gap-2" aria-label={cfg.company.name}>
       <GrassMark size={compact ? 26 : 30} className="text-(--d-accent)" />

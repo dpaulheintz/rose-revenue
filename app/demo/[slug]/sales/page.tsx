@@ -1,9 +1,10 @@
-import Sales from "@/components/demo/farm/modules/Sales";
-import { moduleMeta, requireModule } from "../_lib/module";
+import FarmSales from "@/components/demo/farm/modules/Sales";
+import ShopSales from "@/components/demo/shop/modules/Sales";
+import { demoKind, moduleMeta, requireModule } from "../_lib/module";
 
 export const generateMetadata = moduleMeta("sales");
 
 export default async function Page({ params }: PageProps<"/demo/[slug]/sales">) {
   await requireModule(params, "sales");
-  return <Sales />;
+  return (await demoKind(params)) === "shop" ? <ShopSales /> : <FarmSales />;
 }

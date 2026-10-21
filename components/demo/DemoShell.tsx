@@ -11,7 +11,7 @@ import Dialog from "./Dialog";
 import Icon from "./Icon";
 
 export default function DemoShell({ children }: { children: ReactNode }) {
-  const { cfg, base, anchor } = useDemo();
+  const { cfg, base, anchor, mode, toggleMode } = useDemo();
   const pathname = usePathname();
   const [more, setMore] = useState(false);
   const href = (path: string) => (path ? `${base}/${path}` : base);
@@ -21,7 +21,7 @@ export default function DemoShell({ children }: { children: ReactNode }) {
   const moreActive = moreItems.some((m) => isActive(m.path));
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className={`flex min-h-dvh flex-col ${cfg.lightTheme ? "bg-(--d-bg) text-(--d-text)" : ""}`}>
       {/* Ribbon: on every screen. */}
       <p className="bg-(--d-accent) px-4 py-1.5 text-center text-[12px] leading-snug font-medium text-(--d-on-accent)">{cfg.copy.ribbon}</p>
 
@@ -34,6 +34,16 @@ export default function DemoShell({ children }: { children: ReactNode }) {
           <span className="ml-1 hidden rounded-full border border-current/25 px-2.5 py-0.5 text-[12px] font-medium tracking-[0.04em] opacity-85 md:inline">{cfg.company.appName}</span>
           <div className="ml-auto flex items-center gap-4">
             <span className="hidden opacity-80 lg:block"><PreparedBy /></span>
+            {cfg.lightTheme ? (
+              <button
+                type="button"
+                onClick={toggleMode}
+                aria-label={mode === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+                className="grid size-12 shrink-0 place-items-center rounded-full border border-current/25 hover:bg-white/10"
+              >
+                <Icon name={mode === "dark" ? "sun" : "moon"} size={20} />
+              </button>
+            ) : null}
             <a
               href={CAL_BOOKING_URL}
               target="_blank"
