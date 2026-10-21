@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
+import { demoSlugs } from "./src/demos";
 
 const nextConfig: NextConfig = {
-  // Short link Paul can text: /act2 → the Act 2 Mechanical demo.
+  // Short links Paul can text: /<slug> → /demo/<slug>, for every registered demo.
   async redirects() {
-    return [{ source: "/act2", destination: "/demo/act2", permanent: true }];
+    return demoSlugs.map((slug) => ({ source: `/${slug}`, destination: `/demo/${slug}`, permanent: true }));
   },
 };
 
