@@ -17,6 +17,7 @@ Copy the shape of `src/demos/buckeye` (newest) or `act2`:
 |---|---|
 | `config.ts` | name, wordmark or logo path, theme (add `lightTheme` for a toggle), `look`, nav items in order (`modules`; the first is where `/demo/<slug>` lands; `phone: true` on four for the tab bar), ribbon, toast, footer, vocabulary |
 | `data.ts` | that demo's seeded data, built with the kit helpers |
+| `industry.ts` (optional) | one settings file for a demo meant to be re-skinned: words, numbers, materials, machines; `buckeye` shows the pattern |
 | `meta.ts` | page title, description, and the `og` card: headline, sub, colors, logo or generic mark, font |
 | `fonts.ts` | `next/font/google` with `preload: false`, `display: "swap"`; export `fontClass` and `fontVars` |
 | `pages/` | that demo's screens, composed from kit parts plus anything custom |

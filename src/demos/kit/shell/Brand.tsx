@@ -12,11 +12,11 @@ export function GrassMark({ size = 28, className = "" }: { size?: number; classN
 }
 
 /** Generic marks for a demo with no logo (never the prospect's real logo). */
-export function GenericMark({ name, size = 28, className = "" }: { name: MarkName; size?: number; className?: string }) {
+export function GenericMark({ name, size = 28, className = "", color }: { name: MarkName; size?: number; className?: string; color?: string }) {
   if (name === "grass") return <GrassMark size={size} className={className} />;
   const d = name === "mountain" ? "M2 26 11 9l6 10 4-6 9 13H2Z" : "M14 3h4l.8 3.4 2.5 1 3-1.8 2.8 2.8-1.8 3 1 2.5L30 14.700v4l-3.400.8-1 2.500 1.800 3-2.800 2.800-3-1.800-2.500 1L18 30h-4l-.8-3.400-2.500-1-3 1.800-2.800-2.800 1.800-3-1-2.500L2 18.700v-4l3.400-.8 1-2.500-1.800-3 2.800-2.800 3 1.800 2.500-1L14 3Zm2 8.500a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z";
   return (
-    <svg viewBox="0 0 32 33" width={size} height={size} className={className} aria-hidden="true" fill="currentColor" fillRule="evenodd">
+    <svg viewBox="0 0 32 33" width={size} height={size} className={className} aria-hidden="true" fill={color ?? "currentColor"} fillRule="evenodd">
       <path d={d} />
     </svg>
   );
@@ -40,7 +40,7 @@ export function Wordmark({ cfg, compact = false }: { cfg: DemoConfig; compact?: 
   }
   return (
     <span className="flex items-center gap-2" aria-label={cfg.company.name}>
-      <GenericMark name={cfg.brand?.mark ?? "grass"} size={compact ? 26 : 30} className="text-(--d-accent)" />
+      <GenericMark name={cfg.brand?.mark ?? "grass"} size={compact ? 26 : 30} className={cfg.brand?.markColor ? "" : "text-(--d-accent)"} color={cfg.brand?.markColor} />
       <span className="flex flex-col leading-none" aria-hidden="true">
         <span className={`demo-wordmark ${compact ? "text-[16px]" : "text-[18px]"}`}>{top}</span>
         <span className="mt-1 text-[9.5px] font-medium tracking-[0.28em] uppercase opacity-75">{bottom}</span>

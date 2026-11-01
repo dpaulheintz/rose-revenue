@@ -9,10 +9,10 @@ import { Button } from "@demos/kit/ui/ui";
 export type TourStop = { path: string; title: string; say: string };
 
 /** "Take the tour": walks the screens with a one-sentence callout each. Next/Skip; works on touch. */
-export function Tour({ stops, label = "Take the tour", onActive }: { stops: TourStop[]; label?: string; onActive?: (on: boolean) => void }) {
+export function Tour({ stops, label = "Take the tour", onActive, autoStart = false }: { stops: TourStop[]; label?: string; onActive?: (on: boolean) => void; autoStart?: boolean }) {
   const { base } = useDemo();
   const router = useRouter();
-  const [i, setI] = useState<number | null>(null);
+  const [i, setI] = useState<number | null>(autoStart ? 0 : null);
   useEffect(() => { if (i != null) router.push(`${base}/${stops[i].path}`); }, [i, base, router, stops]);
   const go = (n: number | null) => { setI(n); onActive?.(n != null); };
   if (i == null) return <Button variant="primary" onClick={() => go(0)}><Icon name="play" size={16} />{label}</Button>;
@@ -20,7 +20,7 @@ export function Tour({ stops, label = "Take the tour", onActive }: { stops: Tour
   const last = i === stops.length - 1;
   return (
     <>
-      <span className="text-[13px] text-(--d-muted)">Tour running</span>
+      {autoStart ? null : <span className="text-[13px] text-(--d-muted)">Tour running</span>}
       <div role="dialog" aria-label="Guided tour" className="fixed inset-x-3 bottom-[84px] z-[110] mx-auto max-w-xl rounded-[14px] border border-(--d-accent) bg-(--d-header) p-4 text-(--d-on-header) shadow-2xl md:bottom-6">
         <div className="flex items-baseline justify-between gap-3">
           <p className="demo-display text-[18px]">{s.title}</p>

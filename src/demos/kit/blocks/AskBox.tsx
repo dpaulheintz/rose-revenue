@@ -6,7 +6,7 @@ import { useDemo } from "@demos/kit/shell/DemoProvider";
 import Icon from "@demos/kit/ui/Icon";
 import { Button, PageHeader, Pill } from "@demos/kit/ui/ui";
 
-export type AskAnswer = { text: ReactNode; source: string }; // source = a config.modules key
+export type AskAnswer = { text: ReactNode; source: string; cite?: string }; // source = a config.modules key; cite = the document it came from
 export type AskIntent = { q: string; match: RegExp; run: () => AskAnswer };
 
 const LOOK = {
@@ -20,8 +20,8 @@ const LOOK = {
  * the demo from its own data (no API) and link to the module they came from.
  */
 export function AskBox({
-  title, intro, placeholder, fallback, intents, look = "soft", bubble = "header",
-}: { title: string; intro: ReactNode; placeholder: string; fallback: ReactNode; intents: AskIntent[]; look?: keyof typeof LOOK; bubble?: "header" | "accent" }) {
+  title, intro, placeholder, fallback, intents, look = "soft", bubble = "header", concept = "Concept: ask questions of your own data",
+}: { title: string; intro: ReactNode; placeholder: string; fallback: ReactNode; intents: AskIntent[]; look?: keyof typeof LOOK; bubble?: "header" | "accent"; concept?: string }) {
   const { cfg, base } = useDemo();
   const L = LOOK[look];
   const [msgs, setMsgs] = useState<Array<{ id: number; q: string; a: AskAnswer | null }>>([]);
@@ -39,7 +39,7 @@ export function AskBox({
 
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title={title} meta={<Pill tone="accent">Concept: ask questions of your own data</Pill>} />
+      <PageHeader title={title} meta={<Pill tone="accent">{concept}</Pill>} />
       <div className="demo-card p-4 sm:p-5">
         <div className="flex gap-3">
           <span className={`grid size-10 shrink-0 place-items-center ${L.icon} bg-(--d-accent) text-(--d-on-accent)`}><Icon name="chat" size={20} /></span>
@@ -61,7 +61,7 @@ export function AskBox({
                 <>
                   <p>{m.a.text}</p>
                   <Link href={`${base}/${mod(m.a.source).path}`} className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-(--d-accent)">
-                    <Icon name={mod(m.a.source).icon} size={16} />Source: {mod(m.a.source).label}<Icon name="arrow" size={14} />
+                    <Icon name={mod(m.a.source).icon} size={16} />Source: {m.a.cite ?? mod(m.a.source).label}<Icon name="arrow" size={14} />
                   </Link>
                 </>
               ) : (

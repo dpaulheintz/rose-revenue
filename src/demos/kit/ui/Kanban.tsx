@@ -19,7 +19,7 @@ type Drag<S> = { id: string; x: number; y: number; dx: number; dy: number; w: nu
  * should also offer a status <select> as the keyboard / screen-reader path.
  */
 export default function Kanban<T extends { id: string; name: string }, S extends string>({
-  items, columns, statusOf, onMove, renderCard, columnLabel,
+  items, columns, statusOf, onMove, renderCard, columnLabel, scrollOnly = false,
 }: {
   items: T[];
   columns: S[];
@@ -27,6 +27,7 @@ export default function Kanban<T extends { id: string; name: string }, S extends
   onMove: (id: string, to: S) => void;
   renderCard: (item: T, grip: ReactNode, ghost: boolean) => ReactNode;
   columnLabel: (s: S) => ReactNode;
+  scrollOnly?: boolean; // many columns: stay a sideways board on wide screens instead of a 4-up grid
 }) {
   const [drag, setDrag] = useState<Drag<S> | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -88,7 +89,7 @@ export default function Kanban<T extends { id: string; name: string }, S extends
 
   return (
     <>
-      <div ref={scroller} className={`demo-scroll-x -mx-4 flex gap-3 px-4 pb-3 sm:mx-0 sm:px-0 xl:grid xl:grid-cols-4 ${drag ? "" : "demo-snap"}`}>
+      <div ref={scroller} className={`demo-scroll-x -mx-4 flex gap-3 px-4 pb-3 sm:mx-0 sm:px-0 ${scrollOnly ? "" : "xl:grid xl:grid-cols-4"} ${drag ? "" : "demo-snap"}`}>
         {columns.map((s) => {
           const col = items.filter((i) => statusOf(i) === s);
           const over = drag?.over === s && dragged && statusOf(dragged) !== s;
@@ -97,7 +98,7 @@ export default function Kanban<T extends { id: string; name: string }, S extends
               key={s}
               data-column={s}
               aria-label={`${s}, ${col.length} items`}
-              className={`flex min-h-[300px] w-[82vw] max-w-[330px] shrink-0 flex-col rounded-[20px] border bg-(--d-panel2) transition-colors sm:w-[290px] xl:w-auto xl:max-w-none ${over ? "border-(--d-accent) bg-[color-mix(in_oklab,var(--d-accent)_10%,var(--d-panel2))]" : "border-transparent"}`}
+              className={`flex min-h-[300px] w-[82vw] max-w-[330px] shrink-0 flex-col rounded-[20px] border bg-(--d-panel2) transition-colors sm:w-[290px] ${scrollOnly ? "" : "xl:w-auto xl:max-w-none"} ${over ? "border-(--d-accent) bg-[color-mix(in_oklab,var(--d-accent)_10%,var(--d-panel2))]" : "border-transparent"}`}
             >
               <header data-column={s} className="flex items-center justify-between px-4 py-3">
                 {columnLabel(s)}

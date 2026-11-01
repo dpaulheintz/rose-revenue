@@ -79,7 +79,7 @@ export type DemoConfig = {
   theme: Theme; // default theme
   lightTheme?: Theme; // when present, the header offers a light/dark toggle (theme above = dark)
   look?: Look;
-  brand?: { logo?: string; logoAlt?: string; mark?: MarkName; preparedBy?: boolean };
+  brand?: { logo?: string; logoAlt?: string; mark?: MarkName; markColor?: string; preparedBy?: boolean };
   copy: {
     ribbon: string;
     toast: string;
