@@ -1,4 +1,4 @@
-import type { DemoMeta } from "@demos/kit/types";
+import type { DemoMeta } from "../kit/types";
 import { act2 as cfg } from "./config";
 
 export const meta: DemoMeta = {
@@ -9,6 +9,7 @@ export const meta: DemoMeta = {
     sub: "Estimates, invoices, scheduling, job costing and the customer portal, in one concept app.",
     bg: cfg.theme.bg,
     fg: cfg.theme.text,
+    font: { family: "Archivo Black", weight: 400 },
     accent: cfg.theme.accent,
     logo: "/demos/act2/logo.png",
   },

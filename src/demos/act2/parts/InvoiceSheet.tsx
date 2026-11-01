@@ -8,6 +8,7 @@ import { useDemo } from "@demos/kit/shell/DemoProvider";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
 import { Button, Field } from "@demos/kit/ui/ui";
+import { DocumentPaper } from "@demos/kit/blocks/DocumentPaper";
 import { StatusChip, usd } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
 
@@ -39,61 +40,29 @@ export function InvoiceDoc({ inv }: { inv: InvoiceRow }) {
     for (const p of prior) lines.push({ desc: `Less ${p.kind.toLowerCase()} ${p.no}`, amount: -p.amount });
   }
   return (
-    <article className="demo-print rounded-[10px] bg-white p-5 text-[13.5px] text-[#14171b] shadow-sm sm:p-7" aria-label={`Invoice ${inv.no}`}>
-      <header className="flex flex-wrap items-start justify-between gap-4 border-b-4 border-[#ea8a45] pb-4">
-        <div className="flex items-center gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={cfg.brand!.logo} alt="Act 2 Mechanical LLC" width={56} height={56} className="rounded-full" />
-          <div>
-            <p className="demo-display text-[19px] leading-none tracking-tight uppercase">Act 2 Mechanical LLC</p>
-            <p className="mt-1 text-[11px] font-bold tracking-[0.18em] text-[#b4561a] uppercase">All jobs for all people</p>
-            <p className="mt-1 text-[12px] text-[#545b63]">Central Ohio · (614) 555-0100 · office@example.com</p>
-          </div>
-        </div>
-        <div className="text-right">
-          <p className="demo-display text-[26px] leading-none">Invoice</p>
-          <p className="mt-1 font-semibold">{inv.no}</p>
-          <p className="text-[12.5px] text-[#545b63]">Issued {longDate(inv.issued)}</p>
-          <p className="text-[12.5px] text-[#545b63]">{inv.due === inv.issued ? "Due on receipt" : `Due ${longDate(inv.due)}`}</p>
-        </div>
-      </header>
-      <div className="grid gap-4 py-4 sm:grid-cols-2">
-        <div>
-          <p className="text-[11px] font-bold tracking-[0.12em] text-[#545b63] uppercase">Bill to</p>
-          <p className="font-semibold">{c.name}</p>
-          {c.kind !== "Homeowner" ? <p>Attn: {c.contact}</p> : null}
-          <p className="text-[#545b63]">{c.email}</p>
-        </div>
-        <div>
-          <p className="text-[11px] font-bold tracking-[0.12em] text-[#545b63] uppercase">Job site</p>
-          <p className="font-semibold">{where.address}</p>
-          <p className="text-[#545b63]">{where.town}, Ohio{job ? ` · ${job.no}` : ""}</p>
-        </div>
-      </div>
-      <table className="w-full text-left">
-        <thead className="text-[11px] tracking-[0.1em] text-[#545b63] uppercase">
-          <tr className="border-y border-[#d6dade]"><th className="py-2 font-bold">Description</th><th className="py-2 text-right font-bold">Amount</th></tr>
-        </thead>
-        <tbody>
-          {lines.map((l, i) => (
-            <tr key={i} className="border-b border-[#eaecee] align-top">
-              <td className="py-2 pr-3"><span className="font-semibold">{l.desc}</span>{l.sub ? <span className="block text-[12px] text-[#545b63]">{l.sub}</span> : null}</td>
-              <td className={`py-2 text-right tabular-nums ${l.amount < 0 ? "text-[#545b63]" : ""}`}>{l.amount < 0 ? `−${usd(-l.amount, true)}` : usd(l.amount, true)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <dl className="mt-3 ml-auto w-full max-w-[280px] space-y-1 text-right tabular-nums">
-        <div className="flex justify-between gap-4 text-[15px] font-bold"><dt>Invoice total</dt><dd>{usd(inv.amount, true)}</dd></div>
-        {inv.payments.map((p) => (
-          <div key={p.id} className="flex justify-between gap-4 text-[12.5px] text-[#545b63]"><dt>Paid {shortDate(p.date)} · {p.method}</dt><dd>−{usd(p.amount, true)}</dd></div>
-        ))}
-        <div className="flex justify-between gap-4 border-t-2 border-[#14171b] pt-1 text-[16px] font-bold"><dt>Balance due</dt><dd>{usd(inv.balance, true)}</dd></div>
-      </dl>
-      <footer className="mt-5 border-t border-[#eaecee] pt-3 text-[12px] text-[#545b63]">
-        Pay online by card or bank transfer, or mail a check to Act 2 Mechanical LLC. Thank you for your business.
-      </footer>
-    </article>
+    <DocumentPaper
+      ariaLabel={`Invoice ${inv.no}`}
+      accent="#ea8a45"
+      accentText="#b4561a"
+      logo={{ src: cfg.brand!.logo!, alt: "Act 2 Mechanical LLC" }}
+      company="Act 2 Mechanical LLC"
+      tagline="All jobs for all people"
+      contact="Central Ohio · (614) 555-0100 · office@example.com"
+      title="Invoice"
+      number={inv.no}
+      meta={[`Issued ${longDate(inv.issued)}`, inv.due === inv.issued ? "Due on receipt" : `Due ${longDate(inv.due)}`]}
+      parties={[
+        { label: "Bill to", lines: [{ text: c.name, tone: "strong" }, ...(c.kind !== "Homeowner" ? [{ text: `Attn: ${c.contact}` }] : []), { text: c.email, tone: "muted" }] },
+        { label: "Job site", lines: [{ text: where.address, tone: "strong" }, { text: `${where.town}, Ohio${job ? ` · ${job.no}` : ""}`, tone: "muted" }] },
+      ]}
+      lines={lines}
+      totals={[
+        { label: "Invoice total", amount: inv.amount, kind: "total" },
+        ...inv.payments.map((p) => ({ label: `Paid ${shortDate(p.date)} · ${p.method}`, amount: p.amount, kind: "less" as const })),
+        { label: "Balance due", amount: inv.balance, kind: "due" },
+      ]}
+      footer="Pay online by card or bank transfer, or mail a check to Act 2 Mechanical LLC. Thank you for your business."
+    />
   );
 }
 

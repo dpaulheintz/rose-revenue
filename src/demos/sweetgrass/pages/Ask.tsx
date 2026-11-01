@@ -1,21 +1,18 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { addDays, addMonths, diffDays, monthKey, weekday } from "@demos/kit/data/dates";
 import { dayDate, money, monthLabel, num, pct, shortDate, signedPct } from "@demos/kit/data/format";
 import { inventoryRows, openOrders, revenueByMonth, skuSales, sum } from "@demos/sweetgrass/derive";
 import { useDemo } from "@demos/kit/shell/DemoProvider";
-import Icon from "@demos/kit/ui/Icon";
-import { Button, EarTag, PageHeader, Pill } from "@demos/kit/ui/ui";
+import { EarTag } from "@demos/kit/ui/ui";
+import { AskBox, type AskAnswer } from "@demos/kit/blocks/AskBox";
 import { useFarm } from "@demos/sweetgrass/parts/FarmProvider";
 
-type Answer = { text: ReactNode; source: string };
+type Answer = AskAnswer;
 type Intent = { q: string; match: RegExp; run: () => Answer };
-type Msg = { id: number; q: string; a: Answer | null };
 
 export default function Ask() {
-  const { cfg, base } = useDemo();
+  const { cfg } = useDemo();
   const farm = useFarm();
   const { ds, seed, sku, stats, rotation, serviced } = farm;
   const t = ds.anchor;
@@ -130,61 +127,15 @@ export default function Ask() {
     },
   ];
 
-  const [msgs, setMsgs] = useState<Msg[]>([]);
-  const [q, setQ] = useState("");
-  const id = useId();
-  const end = useRef<HTMLDivElement>(null);
-  const next = useRef(1);
-  useEffect(() => { if (msgs.length) end.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, [msgs]);
-
-  const ask = (text: string) => {
-    const intent = intents.find((i) => i.q === text) ?? intents.find((i) => i.match.test(text));
-    setMsgs((m) => [...m, { id: next.current++, q: text, a: intent ? intent.run() : null }]);
-    setQ("");
-  };
-  const label = (key: string) => cfg.modules.find((m) => m.key === key)!;
-
   return (
-    <div className="mx-auto max-w-3xl">
-      <PageHeader title="Ask the Farm" meta={<Pill tone="accent">Concept: ask questions of your own data</Pill>} />
-      <div className="demo-card p-4 sm:p-5">
-        <div className="flex gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-(--d-accent) text-(--d-on-accent)"><Icon name="chat" size={20} /></span>
-          <p className="text-[15px]">Ask in plain words. Every answer here is computed from the same records as the rest of {cfg.company.appName}, and says where it came from. Try one:</p>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {intents.map((i) => (
-            <button key={i.q} type="button" onClick={() => ask(i.q)} className="inline-flex min-h-12 items-center rounded-full border border-(--d-line) bg-(--d-panel) px-4 text-left text-[14px] font-medium hover:border-(--d-accent)">{i.q}</button>
-          ))}
-        </div>
-      </div>
-
-      <ol className="mt-5 space-y-4" aria-live="polite">
-        {msgs.map((m) => (
-          <li key={m.id} className="space-y-2">
-            <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-(--d-header) px-4 py-2.5 text-[15px] text-(--d-on-header)">{m.q}</p>
-            <div className="demo-card max-w-[92%] p-4 text-[15px] leading-relaxed">
-              {m.a ? (
-                <>
-                  <p>{m.a.text}</p>
-                  <Link href={`${base}/${label(m.a.source).path}`} className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-(--d-accent)">
-                    <Icon name={label(m.a.source).icon} size={16} />Source: {label(m.a.source).label}<Icon name="arrow" size={14} />
-                  </Link>
-                </>
-              ) : (
-                <p>I can&apos;t answer that one in the concept yet. The real version answers from all of your records. Try asking about eggs, milk, cows, turkeys, the herd&apos;s next paddock, deliveries, sold-out products or overdue maintenance.</p>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <div ref={end} />
-
-      <form onSubmit={(e) => { e.preventDefault(); if (q.trim()) ask(q.trim()); }} className="sticky bottom-[84px] mt-5 flex gap-2 rounded-2xl bg-(--d-bg)/90 py-2 backdrop-blur md:bottom-4">
-        <label htmlFor={id} className="sr-only">Ask a question</label>
-        <input id={id} className="demo-input" placeholder="e.g. How many eggs did we sell last week?" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
-        <Button type="submit" variant="primary" disabled={!q.trim()}><Icon name="arrow" size={18} /><span className="sr-only sm:not-sr-only">Ask</span></Button>
-      </form>
-    </div>
+    <AskBox
+      title="Ask the Farm"
+      look="soft"
+      bubble="header"
+      intro={<>Ask in plain words. Every answer here is computed from the same records as the rest of {cfg.company.appName}, and says where it came from. Try one:</>}
+      placeholder="e.g. How many eggs did we sell last week?"
+      fallback=<>I can&apos;t answer that one in the concept yet. The real version answers from all of your records. Try asking about eggs, milk, cows, turkeys, the herd&apos;s next paddock, deliveries, sold-out products or overdue maintenance.</>
+      intents={intents}
+    />
   );
 }

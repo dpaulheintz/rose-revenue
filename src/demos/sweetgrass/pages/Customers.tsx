@@ -8,6 +8,7 @@ import type { Account, Visit } from "@demos/sweetgrass/model";
 import { useDemo } from "@demos/kit/shell/DemoProvider";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
+import { SearchBar } from "@demos/kit/ui/SearchBar";
 import { Avatar, Button, Card, Field, FilterChip, PageHeader, Pill, Stat, Tabs } from "@demos/kit/ui/ui";
 import { useFarm } from "@demos/sweetgrass/parts/FarmProvider";
 import { useWhere } from "@demos/sweetgrass/parts/bits";
@@ -67,7 +68,6 @@ function CustomerList() {
     const key = (x: CustomerStats) => (sort === "ltv" ? -x.ltv : sort === "last" ? -(x.last ? Date.parse(x.last) : 0) : sort === "due" ? (x.next ? 9e15 : x.due ? Date.parse(x.due) : 8e15) : 0);
     return r.sort((a, b) => (sort === "name" ? a.c.last.localeCompare(b.c.last) : key(a) - key(b)));
   }, [all, seg, q, sort]);
-  const searchId = useId();
 
   return (
     <>
@@ -77,11 +77,7 @@ function CustomerList() {
         ))}
       </div>
       <div className="mb-4 flex flex-wrap items-end gap-3">
-        <div className="relative min-w-0 flex-1 basis-60">
-          <label htmlFor={searchId} className="sr-only">Search customers</label>
-          <Icon name="search" size={18} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-(--d-muted)" />
-          <input id={searchId} className="demo-input pl-10" placeholder="Search name, town or email" value={q} onChange={(e) => { setQ(e.target.value); setLimit(40); }} />
-        </div>
+        <SearchBar className="min-w-0 flex-1 basis-60" label="Search customers" placeholder="Search name, town or email" value={q} onChange={(v) => { setQ(v); setLimit(40); }} />
         <Field label="Sort by" className="w-48">
           <select className="demo-input" value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}>
             <option value="ltv">Lifetime value</option>

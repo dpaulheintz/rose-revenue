@@ -1,11 +1,12 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { addDays, diffDays } from "@demos/kit/data/dates";
 import { shortDate } from "@demos/kit/data/format";
 import { aging, estimateTotal, INVOICE_STATUSES, jobTotal, sum, winRate, type InvoiceRow, type InvoiceStatus } from "@demos/act2/derive";
 import type { EstimateStatus } from "@demos/act2/model";
 import Icon from "@demos/kit/ui/Icon";
+import { SearchBar } from "@demos/kit/ui/SearchBar";
 import { Button, Card, FilterChip, PageHeader, Pill, Stat, Tabs } from "@demos/kit/ui/ui";
 import { n, StatusChip, usd } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
@@ -41,7 +42,6 @@ function Invoices() {
   const [status, setStatus] = useState<InvoiceStatus | "Open" | "All">("Open");
   const [q, setQ] = useState("");
   const [limit, setLimit] = useState(30);
-  const searchId = useId();
   const ages = aging(rows);
   const counts = useMemo(() => Object.fromEntries(INVOICE_STATUSES.map((s) => [s, rows.filter((r) => r.status === s).length])), [rows]);
   const list = rows
@@ -72,11 +72,7 @@ function Invoices() {
         {INVOICE_STATUSES.map((s) => <FilterChip key={s} on={status === s} onClick={() => setStatus(s)} count={counts[s]}>{s}</FilterChip>)}
         <FilterChip on={status === "All"} onClick={() => setStatus("All")} count={rows.length}>All</FilterChip>
       </div>
-      <div className="relative">
-        <label htmlFor={searchId} className="sr-only">Search invoices</label>
-        <Icon name="search" size={18} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-(--d-muted)" />
-        <input id={searchId} className="demo-input pl-10" placeholder="Search customer or invoice #" value={q} onChange={(e) => setQ(e.target.value)} />
-      </div>
+      <SearchBar label="Search invoices" placeholder="Search customer or invoice #" value={q} onChange={(v) => setQ(v)} />
 
       {/* Phone: cards. */}
       <ul className="space-y-2 md:hidden">

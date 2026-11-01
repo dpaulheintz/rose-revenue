@@ -1,22 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { addDays, diffDays, weekday } from "@demos/kit/data/dates";
 import { dayDate, shortDate } from "@demos/kit/data/format";
 import { byJobType, estimateTotal, jobFinance, sum } from "@demos/act2/derive";
 import { dayPlan, hhmm } from "@demos/act2/insights";
-import { useDemo } from "@demos/kit/shell/DemoProvider";
-import Icon from "@demos/kit/ui/Icon";
-import { Button, PageHeader, Pill } from "@demos/kit/ui/ui";
+import { AskBox, type AskAnswer } from "@demos/kit/blocks/AskBox";
 import { usd } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
 
-type Answer = { text: ReactNode; source: string };
-type Msg = { id: number; q: string; a: Answer | null };
+type Answer = AskAnswer;
 
 export default function Ask() {
-  const { cfg, base } = useDemo();
   const { book, seed, rows, customer, worker } = useShop();
   const t = book.anchor;
   const nextWork = (d: string) => { while (weekday(d) === 0 || weekday(d) === 6) d = addDays(d, 1); return d; };
@@ -88,54 +82,15 @@ export default function Ask() {
     },
   ];
 
-  const [msgs, setMsgs] = useState<Msg[]>([]);
-  const [q, setQ] = useState("");
-  const id = useId();
-  const end = useRef<HTMLDivElement>(null);
-  const next = useRef(1);
-  useEffect(() => { if (msgs.length) end.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, [msgs]);
-  const ask = (text: string) => {
-    const it = intents.find((i) => i.q === text) ?? intents.find((i) => i.match.test(text));
-    setMsgs((m) => [...m, { id: next.current++, q: text, a: it ? it.run() : null }]);
-    setQ("");
-  };
-  const mod = (key: string) => cfg.modules.find((m) => m.key === key)!;
-
   return (
-    <div className="mx-auto max-w-3xl">
-      <PageHeader title="Ask the Shop" meta={<Pill tone="accent">Concept: ask questions of your own data</Pill>} />
-      <div className="demo-card p-4 sm:p-5">
-        <div className="flex gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-(--d-accent) text-(--d-on-accent)"><Icon name="chat" size={20} /></span>
-          <p className="text-[15px]">Ask in plain words. Answers come straight from your jobs, invoices and timesheets, and say where they came from. Try one:</p>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {intents.map((i) => <button key={i.q} type="button" onClick={() => ask(i.q)} className="inline-flex min-h-12 items-center rounded-full border border-(--d-line) bg-(--d-panel) px-4 text-left text-[14px] font-medium hover:border-(--d-accent)">{i.q}</button>)}
-        </div>
-      </div>
-      <ol className="mt-5 space-y-4" aria-live="polite">
-        {msgs.map((m) => (
-          <li key={m.id} className="space-y-2">
-            <p className="ml-auto w-fit max-w-[85%] rounded-[14px] rounded-br-[4px] bg-(--d-accent) px-4 py-2.5 text-[15px] text-(--d-on-accent)">{m.q}</p>
-            <div className="demo-card max-w-[94%] p-4 text-[15px] leading-relaxed">
-              {m.a ? (
-                <>
-                  <p>{m.a.text}</p>
-                  <Link href={`${base}/${mod(m.a.source).path}`} className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-(--d-accent)"><Icon name={mod(m.a.source).icon} size={16} />Source: {mod(m.a.source).label}<Icon name="arrow" size={14} /></Link>
-                </>
-              ) : (
-                <p>I can&apos;t answer that one in the concept yet. The real version answers from all your records. Try money owed, profit by job type, tomorrow&apos;s crew, budgets, estimates, inspections or hours.</p>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <div ref={end} />
-      <form onSubmit={(e) => { e.preventDefault(); if (q.trim()) ask(q.trim()); }} className="sticky bottom-[84px] mt-5 flex gap-2 rounded-[14px] bg-(--d-bg)/90 py-2 backdrop-blur md:bottom-4">
-        <label htmlFor={id} className="sr-only">Ask a question</label>
-        <input id={id} className="demo-input" placeholder="e.g. Who owes me money?" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
-        <Button type="submit" variant="primary" disabled={!q.trim()}><Icon name="arrow" size={18} /><span className="sr-only sm:not-sr-only">Ask</span></Button>
-      </form>
-    </div>
+    <AskBox
+      title="Ask the Shop"
+      look="sharp"
+      bubble="accent"
+      intro={"Ask in plain words. Answers come straight from your jobs, invoices and timesheets, and say where they came from. Try one:"}
+      placeholder="e.g. Who owes me money?"
+      fallback=<>I can&apos;t answer that one in the concept yet. The real version answers from all your records. Try money owed, profit by job type, tomorrow&apos;s crew, budgets, estimates, inspections or hours.</>
+      intents={intents}
+    />
   );
 }

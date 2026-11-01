@@ -5,8 +5,8 @@ import { addDays, eachDay, weekday, type Ymd } from "@demos/kit/data/dates";
 import { dayDate } from "@demos/kit/data/format";
 import type { CrewId, LeadSource, PhotoTag } from "@demos/act2/model";
 import Dialog from "@demos/kit/ui/Dialog";
-import Icon from "@demos/kit/ui/Icon";
 import { Button, Field } from "@demos/kit/ui/ui";
+import { QuickAdd } from "@demos/kit/blocks/QuickAdd";
 import EstimateBuilder from "@demos/act2/parts/EstimateBuilder";
 import InvoiceSheet from "@demos/act2/parts/InvoiceSheet";
 import JobSheet from "@demos/act2/parts/JobSheet";
@@ -32,38 +32,16 @@ export default function ShopOverlays() {
 
 function QuickAddButton() {
   const { open } = useShop();
-  const [menu, setMenu] = useState(false);
-  const items = [
-    { label: "New estimate", icon: "receipt" as const, go: () => open({ kind: "estimate", id: null }) },
-    { label: "New job", icon: "hammer" as const, go: () => open({ kind: "quick", what: "job" }) },
-    { label: "Log time", icon: "clock" as const, go: () => open({ kind: "quick", what: "time" }) },
-    { label: "Add photo", icon: "camera" as const, go: () => open({ kind: "quick", what: "photo" }) },
-    { label: "New lead", icon: "users" as const, go: () => open({ kind: "quick", what: "lead" }) },
-  ];
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setMenu(true)}
-        aria-label="Quick add"
-        aria-haspopup="dialog"
-        className="fixed right-4 bottom-[calc(84px+env(safe-area-inset-bottom))] z-[45] grid size-16 place-items-center rounded-full bg-(--d-accent) text-(--d-on-accent) shadow-[0_12px_30px_-10px_rgb(0_0_0_/_0.6)] hover:brightness-110 md:right-6 md:bottom-6"
-      >
-        <Icon name="plus" size={30} />
-      </button>
-      <Dialog open={menu} onClose={() => setMenu(false)} title="Quick add">
-        <ul className="grid *:min-w-0 grid-cols-1 gap-2 pb-2 min-[420px]:grid-cols-2">
-          {items.map((it) => (
-            <li key={it.label}>
-              <button type="button" onClick={() => { setMenu(false); it.go(); }} className="flex min-h-16 w-full items-center gap-3 rounded-[12px] border border-(--d-line) px-4 text-left text-[16px] font-semibold hover:border-(--d-accent)">
-                <span className="grid size-10 place-items-center rounded-[10px] bg-(--d-panel2) text-(--d-accent)"><Icon name={it.icon} size={22} /></span>
-                {it.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </Dialog>
-    </>
+    <QuickAdd
+      items={[
+        { label: "New estimate", icon: "receipt", go: () => open({ kind: "estimate", id: null }) },
+        { label: "New job", icon: "hammer", go: () => open({ kind: "quick", what: "job" }) },
+        { label: "Log time", icon: "clock", go: () => open({ kind: "quick", what: "time" }) },
+        { label: "Add photo", icon: "camera", go: () => open({ kind: "quick", what: "photo" }) },
+        { label: "New lead", icon: "users", go: () => open({ kind: "quick", what: "lead" }) },
+      ]}
+    />
   );
 }
 

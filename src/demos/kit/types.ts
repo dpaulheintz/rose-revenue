@@ -9,6 +9,8 @@ export type IconName =
   | "drop" | "clock" | "pin" | "spark" | "move" | "cloud" | "rain" | "jug"
   | "hammer" | "dollar" | "camera" | "shield" | "clipboard" | "pen" | "moon" | "eye" | "receipt" | "play" | "stop" | "image";
 
+export type MarkName = "grass" | "mountain" | "gear";
+
 export type Theme = {
   bg: string; // app background
   panel: string; // cards
@@ -59,7 +61,8 @@ export type DemoMeta = {
     fg: string;
     accent: string;
     logo?: string; // public path (PNG) drawn on the card, e.g. the prospect's logo
-    mark?: "grass" | "mountain"; // generic mark when there's no logo
+    mark?: MarkName; // generic mark when there's no logo
+    font?: { family: string; weight: number }; // Google font for the card's headline
   };
 };
 
@@ -76,7 +79,7 @@ export type DemoConfig = {
   theme: Theme; // default theme
   lightTheme?: Theme; // when present, the header offers a light/dark toggle (theme above = dark)
   look?: Look;
-  brand?: { logo?: string; logoAlt?: string };
+  brand?: { logo?: string; logoAlt?: string; mark?: MarkName; preparedBy?: boolean };
   copy: {
     ribbon: string;
     toast: string;

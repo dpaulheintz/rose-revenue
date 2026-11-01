@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
-import { CAL_BOOKING_URL } from "@/lib/booking";
 import { dayDate } from "@demos/kit/data/format";
 import { useDemo } from "@demos/kit/shell/DemoProvider";
+import { BookCall } from "@demos/kit/shell/BookCall";
 import { PreparedBy, Wordmark } from "@demos/kit/shell/Brand";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
@@ -19,6 +19,7 @@ export default function DemoShell({ children }: { children: ReactNode }) {
   const phoneTabs = cfg.modules.filter((m) => m.phone).slice(0, 4);
   const moreItems = cfg.modules.filter((m) => !phoneTabs.includes(m));
   const moreActive = moreItems.some((m) => isActive(m.path));
+  const prepared = cfg.brand?.preparedBy !== false; // a demo can read as the prospect's own system
 
   return (
     <div className={`flex min-h-dvh flex-col ${cfg.lightTheme ? "bg-(--d-bg) text-(--d-text)" : ""}`}>
@@ -33,7 +34,7 @@ export default function DemoShell({ children }: { children: ReactNode }) {
           </Link>
           <span className="ml-1 hidden rounded-full border border-current/25 px-2.5 py-0.5 text-[12px] font-medium tracking-[0.04em] opacity-85 md:inline">{cfg.company.appName}</span>
           <div className="ml-auto flex items-center gap-4">
-            <span className="hidden opacity-80 lg:block"><PreparedBy /></span>
+            {prepared ? <span className="hidden opacity-80 lg:block"><PreparedBy /></span> : null}
             {cfg.lightTheme ? (
               <button
                 type="button"
@@ -44,17 +45,7 @@ export default function DemoShell({ children }: { children: ReactNode }) {
                 <Icon name={mode === "dark" ? "sun" : "moon"} size={20} />
               </button>
             ) : null}
-            <a
-              href={CAL_BOOKING_URL}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-full bg-(--d-accent) px-4 whitespace-nowrap text-[14px] font-semibold text-(--d-on-accent) hover:brightness-110 sm:px-5"
-            >
-              <Icon name="calendar" size={18} className="hidden sm:block" />
-              <span className="sm:hidden">Book a call</span>
-              <span className="hidden sm:inline">Book a free 15-min call</span>
-              <span className="sr-only"> (opens Cal.com in a new tab)</span>
-            </a>
+            <BookCall />
           </div>
         </div>
       </header>
@@ -77,14 +68,14 @@ export default function DemoShell({ children }: { children: ReactNode }) {
           ))}
           <div className="mt-auto hidden px-3 pt-4 pb-2 text-[12px] text-(--d-muted) xl:block">
             <p>As of {dayDate(anchor)}</p>
-            <PreparedBy className="mt-1" />
+            {prepared ? <PreparedBy className="mt-1" /> : null}
           </div>
         </nav>
 
         <main id="main" className="min-w-0 flex-1 px-4 pt-5 pb-28 sm:px-6 md:pb-10 lg:px-8 lg:pt-7">
           <div className="mx-auto max-w-[1320px]">{children}</div>
           <footer className="mx-auto mt-12 flex max-w-[1320px] flex-wrap items-center justify-between gap-2 border-t border-(--d-line) pt-4 text-[12px] text-(--d-muted)">
-            <PreparedBy />
+            {prepared ? <PreparedBy /> : null}
             <span>{cfg.copy.footer}</span>
           </footer>
         </main>

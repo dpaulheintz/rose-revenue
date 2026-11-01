@@ -7,6 +7,7 @@ import { customerView, sum, type CustomerRow } from "@demos/act2/derive";
 import type { CustomerKind, Lead, LeadStage } from "@demos/act2/model";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
+import { SearchBar } from "@demos/kit/ui/SearchBar";
 import Kanban from "@demos/kit/ui/Kanban";
 import { Avatar, Button, Card, Field, FilterChip, PageHeader, Pill, Tabs } from "@demos/kit/ui/ui";
 import { n, StatusChip, usd } from "@demos/act2/parts/bits";
@@ -36,7 +37,6 @@ function CustomerList() {
   const [sort, setSort] = useState<"ltv" | "last" | "balance" | "name">("ltv");
   const [limit, setLimit] = useState(40);
   const [openId, setOpenId] = useState<string | null>(null);
-  const searchId = useId();
   const list = all
     .filter((x) => (kind === "All" ? true : kind === "Balance" ? x.open > 0 : x.c.kind === kind))
     .filter((x) => { const n = q.trim().toLowerCase(); return !n || `${x.c.name} ${x.c.contact} ${x.c.properties.map((p) => `${p.address} ${p.town}`).join(" ")}`.toLowerCase().includes(n); })
@@ -51,11 +51,7 @@ function CustomerList() {
         ))}
       </div>
       <div className="mb-4 flex flex-wrap items-end gap-3">
-        <div className="relative min-w-0 flex-1 basis-60">
-          <label htmlFor={searchId} className="sr-only">Search customers</label>
-          <Icon name="search" size={18} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-(--d-muted)" />
-          <input id={searchId} className="demo-input pl-10" placeholder="Name, street or town" value={q} onChange={(e) => setQ(e.target.value)} />
-        </div>
+        <SearchBar className="min-w-0 flex-1 basis-60" label="Search customers" placeholder="Name, street or town" value={q} onChange={(v) => setQ(v)} />
         <Field label="Sort by" className="w-44">
           <select className="demo-input" value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}>
             <option value="ltv">Lifetime value</option>

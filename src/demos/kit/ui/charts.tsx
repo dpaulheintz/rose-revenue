@@ -132,3 +132,59 @@ export function SplitBar({ parts, format }: { parts: Array<{ label: string; valu
     </div>
   );
 }
+
+/* ----------------------------- line chart ---------------------------- */
+
+/** Multi-series line chart in SVG, with an optional target line. No library: light on phones. */
+export function LineChart({ labels, series, height = 180, format, target, title, labelEvery = 1 }: { labels: string[]; series: Array<{ name: string; color: string; values: number[] }>; height?: number; format: (n: number) => string; target?: { value: number; label: string }; title: string; labelEvery?: number }) {
+  const all = series.flatMap((x) => x.values).concat(target ? [target.value] : []);
+  const hi = Math.max(...all), lo = Math.min(...all, 0);
+  const span = hi - lo || 1;
+  const n = Math.max(1, labels.length - 1);
+  const X = (i: number) => (i / n) * 100;
+  const Y = (v: number) => 96 - ((v - lo) / span) * 90;
+  const summary = series.map((x) => `${x.name} latest ${format(x.values.at(-1) ?? 0)}`).join(", ");
+  return (
+    <figure className="min-w-0">
+      <figcaption className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-[13.5px]">
+        {series.map((x) => (
+          <span key={x.name} className="inline-flex items-center gap-1.5 text-(--d-muted)"><span className="size-2.5 rounded-sm" style={{ background: x.color }} aria-hidden="true" />{x.name} <span className="font-medium text-(--d-text)">{format(x.values.at(-1) ?? 0)}</span></span>
+        ))}
+        {target ? <span className="text-(--d-muted)">{target.label} {format(target.value)}</span> : null}
+      </figcaption>
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="block w-full overflow-visible" style={{ height }} role="img" aria-label={`${title}. ${summary}.`}>
+        {target ? <line x1="0" x2="100" y1={Y(target.value)} y2={Y(target.value)} stroke="var(--d-muted)" strokeWidth="1" strokeDasharray="4 4" vectorEffect="non-scaling-stroke" /> : null}
+        {series.map((x) => <polyline key={x.name} points={x.values.map((v, i) => `${X(i)},${Y(v)}`).join(" ")} fill="none" stroke={x.color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />)}
+      </svg>
+      <div className="mt-1.5 flex justify-between text-[11.5px] text-(--d-muted)" aria-hidden="true">
+        {labels.map((l, i) => (i % labelEvery === 0 || i === labels.length - 1 ? <span key={i}>{l}</span> : null))}
+      </div>
+    </figure>
+  );
+}
+
+/* ------------------------------- donut ------------------------------- */
+
+export function Donut({ parts, size = 140, center, format, title }: { parts: Array<{ label: string; value: number; color: string }>; size?: number; center?: ReactNode; format: (n: number) => string; title: string }) {
+  const total = parts.reduce((s, p) => s + p.value, 0) || 1;
+  const R = 15.9; // circumference ≈ 100, so dash lengths read as percents
+  // Each slice starts where the previous ended (offset 25 = 12 o'clock).
+  const offsets = parts.map((_, i) => 25 - parts.slice(0, i).reduce((sum, p) => sum + (p.value / total) * 100, 0));
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <div className="relative shrink-0" style={{ width: size, height: size }}>
+        <svg viewBox="0 0 42 42" width={size} height={size} role="img" aria-label={`${title}: ${parts.map((p) => `${p.label} ${format(p.value)}`).join(", ")}`}>
+          <circle cx="21" cy="21" r={R} fill="none" stroke="var(--d-panel2)" strokeWidth="6" />
+          {parts.map((p, i) => {
+            const pct = (p.value / total) * 100;
+            return <circle key={p.label} cx="21" cy="21" r={R} fill="none" stroke={p.color} strokeWidth="6" strokeDasharray={`${pct} ${100 - pct}`} strokeDashoffset={offsets[i]} />;
+          })}
+        </svg>
+        {center ? <div className="absolute inset-0 grid place-items-center text-center">{center}</div> : null}
+      </div>
+      <ul className="min-w-0 flex-1 space-y-1 text-[13.5px]">
+        {parts.map((p) => <li key={p.label} className="flex items-center justify-between gap-3"><span className="inline-flex items-center gap-2"><span className="size-2.5 rounded-sm" style={{ background: p.color }} aria-hidden="true" />{p.label}</span><span className="font-medium tabular-nums">{format(p.value)}</span></li>)}
+      </ul>
+    </div>
+  );
+}

@@ -23,3 +23,8 @@ export function monthLabel(ym: string, withYear = false) {
   return withYear ? `${m} ${ym.slice(0, 4)}` : m;
 }
 export const initials = (name: string) => name.split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+
+/** "$1,234" or, with cents, "$1,234.50". */
+export const usd = (n: number, cents = false) => (cents ? `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `$${Math.round(n).toLocaleString("en-US")}`);
+/** "1 job", "3 jobs". */
+export const count = (n: number, word: string, plural = `${word}s`) => `${n.toLocaleString("en-US")} ${n === 1 ? word : plural}`;

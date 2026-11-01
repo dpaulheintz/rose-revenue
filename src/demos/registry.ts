@@ -3,12 +3,10 @@
 
 import type { ComponentType, CSSProperties, ReactNode } from "react";
 import type { DemoConfig, DemoMeta } from "./kit/types";
-import { getConfig } from "./index";
+import { getConfig, getMeta } from "./index";
 import * as act2Fonts from "./act2/fonts";
-import { meta as act2Meta } from "./act2/meta";
 import * as act2Client from "./act2/pages";
 import { fontClass as sweetgrassFonts } from "./sweetgrass/fonts";
-import { meta as sweetgrassMeta } from "./sweetgrass/meta";
 import * as sweetgrassClient from "./sweetgrass/pages";
 
 export type Registered = {
@@ -20,15 +18,15 @@ export type Registered = {
   Screen: ComponentType<{ id: string }>; // renders one screen by config.modules[].key (lazy)
 };
 
-const entries: Record<string, Omit<Registered, "config">> = {
-  sweetgrass: { meta: sweetgrassMeta, fontClass: sweetgrassFonts, Provider: sweetgrassClient.Data, Screen: sweetgrassClient.Screen },
-  act2: { meta: act2Meta, fontClass: act2Fonts.fontClass, fontVars: act2Fonts.fontVars as CSSProperties, Provider: act2Client.Data, Screen: act2Client.Screen },
+const entries: Record<string, Omit<Registered, "config" | "meta">> = {
+  sweetgrass: { fontClass: sweetgrassFonts, Provider: sweetgrassClient.Data, Screen: sweetgrassClient.Screen },
+  act2: { fontClass: act2Fonts.fontClass, fontVars: act2Fonts.fontVars as CSSProperties, Provider: act2Client.Data, Screen: act2Client.Screen },
 };
 
 export function getRegistered(slug: string): Registered | null {
   const config = getConfig(slug);
   const e = entries[slug];
-  return config && e ? { config, ...e } : null;
+  return config && e ? { config, meta: getMeta(slug)!, ...e } : null;
 }
 
 export const registeredSlugs = Object.keys(entries);

@@ -1,11 +1,12 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { diffDays } from "@demos/kit/data/dates";
 import { dayDate, money, moneyK, num, shortDate } from "@demos/kit/data/format";
 import { buildable, fmtDays, inventoryRows, nextRestock, sum, type InvRow } from "@demos/sweetgrass/derive";
 import { useDemo } from "@demos/kit/shell/DemoProvider";
 import Icon from "@demos/kit/ui/Icon";
+import { SearchBar } from "@demos/kit/ui/SearchBar";
 import { Button, Card, FilterChip, Note, PageHeader, Pill, Segmented, Stat } from "@demos/kit/ui/ui";
 import { useFarm } from "@demos/sweetgrass/parts/FarmProvider";
 import { StockPill } from "@demos/sweetgrass/parts/bits";
@@ -20,7 +21,6 @@ export default function Inventory() {
   const [cat, setCat] = useState("All");
   const [status, setStatus] = useState<"all" | "Low" | "Out">("all");
   const [q, setQ] = useState("");
-  const searchId = useId();
   const shown = rows.filter((r) => (cat === "All" || r.s.category === cat) && (status === "all" || r.status === status) && (!q.trim() || r.s.name.toLowerCase().includes(q.trim().toLowerCase())));
 
   const t = ds.anchor;
@@ -91,11 +91,7 @@ export default function Inventory() {
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="relative min-w-0 flex-1 basis-56">
-            <label htmlFor={searchId} className="sr-only">Search products</label>
-            <Icon name="search" size={18} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-(--d-muted)" />
-            <input id={searchId} className="demo-input pl-10" placeholder="Search products" value={q} onChange={(e) => setQ(e.target.value)} />
-          </div>
+          <SearchBar className="min-w-0 flex-1 basis-56" label="Search products" placeholder="Search products" value={q} onChange={(v) => setQ(v)} />
           <Segmented label="Status" value={status} onChange={setStatus} options={[{ value: "all", label: "All" }, { value: "Low", label: `Low (${low.length})` }, { value: "Out", label: `Out (${out.length})` }]} />
         </div>
 
