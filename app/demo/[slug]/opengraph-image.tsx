@@ -40,7 +40,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
           {logo ? (
             <img src={logo} width={112} height={112} alt="" />
-          ) : (
+          ) : og.noMark ? null : (
             <svg viewBox="0 0 32 33" width={92} height={92}><path d={MARKS[og.mark ?? "grass"]} fill={og.accent} fillRule="evenodd" /></svg>
           )}
           <div style={{ display: "flex", flexDirection: "column" }}>

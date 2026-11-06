@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: LayoutProps<"/demo/[slug]">):
   const demo = getRegistered((await params).slug);
   if (!demo) return {};
   const { config: cfg, meta } = demo;
+  const app = meta.app ? { appleWebApp: { capable: true, title: meta.app.name, statusBarStyle: "default" as const }, icons: { apple: meta.app.icon } } : {};
   // The preview image comes from ./opengraph-image.tsx (drawn from the demo's brand colors).
   return {
     title: { default: meta.title, template: `%s · ${meta.title}` },
@@ -24,12 +25,14 @@ export async function generateMetadata({ params }: LayoutProps<"/demo/[slug]">):
     alternates: { canonical: `/demo/${cfg.slug}` },
     openGraph: { type: "website", url: `/demo/${cfg.slug}`, siteName: "Rose Revenue", title: `${meta.title} (concept demo)`, description: meta.description },
     twitter: { card: "summary_large_image", title: `${meta.title} (concept demo)`, description: meta.description },
+    ...app,
   };
 }
 
 export async function generateViewport({ params }: LayoutProps<"/demo/[slug]">): Promise<Viewport> {
   const demo = getRegistered((await params).slug);
-  return { themeColor: demo?.config.look?.themeColor ?? "#263421" };
+  const look = demo?.config.look;
+  return { themeColor: look?.themeColor ?? "#263421", ...(look?.viewportFit ? { viewportFit: look.viewportFit } : {}) };
 }
 
 export default async function DemoLayout({ children, params }: LayoutProps<"/demo/[slug]">) {
@@ -37,6 +40,7 @@ export default async function DemoLayout({ children, params }: LayoutProps<"/dem
   const demo = getRegistered(slug);
   if (!demo) notFound();
   const { config: cfg, Provider } = demo;
+  const Shell = demo.Shell ?? DemoShell;
   // "Today" is fixed once, on the server, and handed down: the client rebuilds the same data.
   const anchor = todayIn(cfg.timeZone);
   const vars = { ...themeVars(cfg.theme), ...lookVars(cfg.look), ...demo.fontVars };
@@ -45,7 +49,7 @@ export default async function DemoLayout({ children, params }: LayoutProps<"/dem
     <div className={`demo-root ${demo.fontClass}`} style={vars}>
       <DemoProvider cfg={cfg} anchor={anchor}>
         <Provider anchor={anchor}>
-          <DemoShell>{children}</DemoShell>
+          <Shell>{children}</Shell>
         </Provider>
       </DemoProvider>
     </div>

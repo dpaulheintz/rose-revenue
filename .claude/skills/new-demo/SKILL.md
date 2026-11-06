@@ -7,13 +7,13 @@ description: Add a prospect demo at /demo/<slug> (short link /<slug>) to the Ros
 
 A demo is a click-through app with fake data that makes one owner say "can you build this for us?" and book a call. The kit is a parts bin, not a template: every demo gets its own layout, screens and personality. Nothing requires an Overview page, a weather strip, a "Today" page or any fixed screen.
 
-Existing demos (all must keep working): `sweetgrass` (dairy farm), `act2` (home-services contractor), `buckeye` (CNC job shop).
+Existing demos (all must keep working): `sweetgrass` (dairy farm), `act2` (home-services contractor), `buckeye` (CNC job shop), `simpletimes` (beverage brands + co-packing; phone-first, three lanes).
 
 ## 1. Read the request
 Pin down: the business and what they do, their colors and fonts (read them from their site's CSS; never copy logos or photos unless Paul supplies one), the screens asked for, and the one "wow" screen. Spend your design effort there.
 
 ## 2. Create src/demos/<slug>/
-Copy the shape of `src/demos/buckeye` (newest) or `act2`:
+Copy the shape of `src/demos/simpletimes` (phone-first, lanes, own shell), `buckeye` (one settings file drives everything) or `act2`:
 
 | File | What goes in it |
 |---|---|
@@ -25,6 +25,7 @@ Copy the shape of `src/demos/buckeye` (newest) or `act2`:
 | `pages/` | that demo's screens, composed from kit parts plus anything custom |
 | `pages/index.tsx` | lazy loader: literal `dynamic(() => import("./X"))` per screen and the provider (exports `Data`, `Screen`). Copy an existing one; literal imports are what make code splitting and SSR work |
 | `parts/` | the demo's provider (state in React memory only) and custom components |
+| custom shell (optional) | export `Shell` from `pages/index.tsx` and add it to the registry entry; `simpletimes/parts/StShell.tsx` wraps `LaneShell` |
 
 Reuse kit parts when they fit. Build custom pieces when the business needs something the kit doesn't have. If you build something reusable, move it into the kit and add it to the list below.
 
@@ -52,17 +53,19 @@ Pushing `main` auto-deploys the live site. Report back with what was built, the 
 ## The kit (src/demos/kit)
 Import with the `@demos/` alias. Everything is prop-driven with no business copy.
 
+**Phone-first demos:** set `look.bodySize: "16px"` (no zoom on input focus) and `look.viewportFit: "cover"` (safe areas), give `meta.app` a name and a 180×180 icon for add-to-home-screen, and split the app into `cfg.lanes` with `shell/LaneShell` (sticky lane switcher + optional sub-bar, a tab bar per lane, More sheet, floating + per lane, sidebar from 1024px). Big numbers: check the display font's figures; Bayon's 1 reads like an I.
+
 **Shell (automatic, from the layout):** `shell/DemoShell` (header, sidebar on tablet/desktop, phone tab bar, ribbon, footer), `shell/DemoProvider` (`useDemo()`: `cfg`, `anchor`, `base`, `notify()` for the demo-mode toast, theme mode), `shell/BookCall`, `shell/Brand` (`Wordmark`, `PreparedBy`, `GenericMark`; `brand.preparedBy: false` makes it read as their own system). Styles: `kit.css`.
 
 **UI (`ui/`):**
 - `ui.tsx`: `Stat` (simple KPI), `Pill` (status chip), `Card`, `PageHeader`, `Button`, `Segmented` (segmented control), `FilterChip` + `ChipRow` (segmented filter: a sideways-scrolling row of chips), `Tabs` (lane / section switcher), `CheckRow` (tappable checkbox row), `Field`, `Note`, `Avatar`, `Chip`, `EarTag`.
-- `KpiCard` (KPI with context line, tone and optional sparkline; clickable), `Dialog` (modal; `drawer` = record drawer / bottom sheet), `Icon`, `SearchBar`, `EmptyState`, `Kanban` (touch drag; `scrollOnly` for many columns).
+- `KpiCard` (KPI with context line, tone and optional sparkline; clickable), `Dialog` (modal; `drawer` = record drawer / bottom sheet; `sheet` = full-height phone sheet with drag handle and a footer that clears the home bar), `ContactButtons` (call / text / email that show the toast), `useSwipe` (sideways flick handlers), `Icon`, `SearchBar`, `EmptyState`, `Kanban` (touch drag; `scrollOnly` for many columns).
 - `charts`: `ColumnChart`, `LineChart`, `Donut`, `BarList`, `SplitBar`, `Sparkline`. Plain divs and SVG with no library, so there's nothing heavy to lazy-load.
 
 **Optional blocks (`blocks/`):**
-- Lists: `ResponsiveTable` (table, cards on phones), `ListWithDetail` (search + chips + table + drawer: the CRM screen), `PipelineBoard` (Kanban with stage pills and optional per-stage totals).
-- Planning: `Calendar` (`AgendaList`, `WeekGrid` with drag across lanes, `MonthGrid`), `Scorecard` (measures × 13 weeks with goals and misses flagged), `TodoList` (to-dos or issues in a card).
-- Money and paper: `PriceBreakdown` (quote-calculator read-out; do the math with `data/pricing`), `DocumentPaper` (invoice / quote on printable white paper), `SignaturePad`.
+- Lists: `ResponsiveTable` (table, cards on phones), `ListWithDetail` (search + chips + table + drawer: the CRM screen), `PipelineBoard` (Kanban with stage pills and optional per-stage totals), `StagePager` (a pipeline on a phone: one stage at a time, swipeable stage tabs with counts, a "Move to" sheet instead of drag).
+- Planning: `Calendar` (`AgendaList`, `WeekAgenda` for phones with swipe between weeks, `WeekGrid` with drag across lanes, `MonthGrid`), `Scorecard` (measures × 13 weeks with goals and misses flagged), `TodoList` (to-dos or issues in a card).
+- Money and paper: `StepWizard` (a form in steps on phones with a pinned summary bar), `PriceBreakdown` (quote-calculator read-out; do the math with `data/pricing`), `DocumentPaper` (invoice / quote on printable white paper), `SignaturePad`.
 - Other: `PhotoTile` (placeholder photos), `PhoneFrame` ("client view" wrapper), `QuickAdd` (floating +), `AskBox` (chat box with canned answers and cited sources; `concept` sets the label), `Tour` (guided tour; mount it in the provider with `autoStart` so it survives navigation).
 
 **Data helpers (`data/`):** `rng` (`makeRng`, `hash`: seed from the slug, one stream per concern), `dates` (`todayIn` runs once in the layout; read it as `anchor` from `useDemo()` and rebuild data from it so server and client match), `fake` (`peopleNames`, `phone555`, `emailFor`, `streetAddress`), `format` (`usd`, `money`, `shortDate`, `dayDate`, `count`...), `season` (`seasonCurve`, `seasonOf`), `pricing` (`withMargin`, `withMarkup`, `marginOf`, `laborCost`).

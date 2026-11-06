@@ -29,8 +29,12 @@ export type Theme = {
   chart: string[]; // categorical series colors
 };
 
+/** A lane groups modules into one part of the business (e.g. Brands | Co-Packing | Company). */
+export type DemoLane = { key: string; label: string; color?: string; onColor?: string };
+
 export type DemoModule = {
   key: string;
+  lane?: string; // DemoLane.key, for demos with lanes
   label: string;
   short?: string; // phone tab label
   icon: IconName;
@@ -48,6 +52,8 @@ export type Look = {
   wordmarkTracking?: string;
   radius?: string; // card corner radius
   shadow?: string; // card shadow
+  bodySize?: string; // base text size (default 15px); phone-first demos use 16px so inputs don't zoom
+  viewportFit?: "cover"; // draw under the notch / home bar (the shell then pads for safe areas)
 };
 
 /** Link-preview + page metadata for a demo. The OG card is drawn from these brand colors. */
@@ -63,7 +69,9 @@ export type DemoMeta = {
     logo?: string; // public path (PNG) drawn on the card, e.g. the prospect's logo
     mark?: MarkName; // generic mark when there's no logo
     font?: { family: string; weight: number }; // Google font for the card's headline
+    noMark?: boolean; // no logo and no generic mark: the typeset name alone
   };
+  app?: { name: string; icon: string }; // add-to-home-screen name and icon (public path, 180x180 PNG)
 };
 
 export type DemoConfig = {
@@ -79,12 +87,13 @@ export type DemoConfig = {
   theme: Theme; // default theme
   lightTheme?: Theme; // when present, the header offers a light/dark toggle (theme above = dark)
   look?: Look;
-  brand?: { logo?: string; logoAlt?: string; mark?: MarkName; markColor?: string; preparedBy?: boolean };
+  brand?: { logo?: string; logoAlt?: string; mark?: MarkName; markColor?: string; preparedBy?: boolean; typeOnly?: boolean }; // typeOnly: a typeset wordmark with no mark
   copy: {
     ribbon: string;
     toast: string;
     footer: string;
   };
   modules: DemoModule[]; // nav items, in order; the first is where /demo/<slug> lands
+  lanes?: DemoLane[]; // optional: split the app into lanes (use shell/LaneShell)
   vocab?: Record<string, string>; // this business's words for things (e.g. { customer: "owner" })
 };

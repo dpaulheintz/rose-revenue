@@ -21,5 +21,5 @@ export function lookVars(l: Look | undefined): CSSProperties {
   if (l.wordmarkTracking) v["--d-wordmark-tracking"] = l.wordmarkTracking;
   if (l.radius) v["--d-radius"] = l.radius;
   if (l.shadow) v["--d-shadow"] = l.shadow;
-  return v as CSSProperties;
+  return (l.bodySize ? { ...v, fontSize: l.bodySize } : v) as CSSProperties;
 }

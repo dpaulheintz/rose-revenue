@@ -5,6 +5,7 @@ import { addDays, monthKey, weekStart, weekday, type Ymd } from "@demos/kit/data
 import { dayDate, monthLabel, shortDate } from "@demos/kit/data/format";
 import Icon from "@demos/kit/ui/Icon";
 import { Button } from "@demos/kit/ui/ui";
+import { useSwipe } from "@demos/kit/ui/useSwipe";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -173,5 +174,30 @@ export function MonthGrid<T>({
         </ul>
       </div>
     </section>
+  );
+}
+
+/**
+ * Phone agenda, one week at a time: swipe (or tap the arrows) for the next or
+ * previous week. Shows days that have something on them, plus today.
+ */
+export function WeekAgenda<T>({
+  today, itemsOn, getKey, renderItem, noun = "item", itemClass,
+}: { today: Ymd; itemsOn: (d: Ymd) => T[]; getKey: (t: T) => string; renderItem: (t: T, d: Ymd) => ReactNode; noun?: string; itemClass?: string }) {
+  const [monday, setMonday] = useState(weekStart(today));
+  const swipe = useSwipe(() => setMonday((m) => addDays(m, 7)), () => setMonday((m) => addDays(m, -7)));
+  const week = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
+  const days = week.filter((d) => d === today || itemsOn(d).length);
+  const isThis = monday === weekStart(today);
+  return (
+    <div {...swipe}>
+      <div className="mb-3 flex items-center gap-2">
+        <button type="button" onClick={() => setMonday((m) => addDays(m, -7))} aria-label="Previous week" className="grid size-12 place-items-center rounded-full border border-(--d-line) bg-(--d-panel)"><Icon name="arrow" size={18} className="rotate-180" /></button>
+        <p className="min-w-0 flex-1 text-center"><span className="demo-display block text-[19px]">{isThis ? "This week" : `Week of ${shortDate(monday)}`}</span><span className="block text-[13.5px] text-(--d-muted)">{shortDate(week[0])} to {shortDate(week[6])}. Swipe for more.</span></p>
+        <button type="button" onClick={() => setMonday((m) => addDays(m, 7))} aria-label="Next week" className="grid size-12 place-items-center rounded-full border border-(--d-line) bg-(--d-panel)"><Icon name="arrow" size={18} /></button>
+      </div>
+      {!isThis ? <div className="mb-3 flex justify-center"><Button variant="ghost" onClick={() => setMonday(weekStart(today))}>Back to this week</Button></div> : null}
+      {days.length ? <AgendaList days={days} today={today} itemsOn={itemsOn} getKey={getKey} renderItem={renderItem} noun={noun} itemClass={itemClass} /> : <p className="rounded-[12px] border border-dashed border-(--d-line) p-6 text-center text-(--d-muted)">Nothing scheduled this week.</p>}
+    </div>
   );
 }

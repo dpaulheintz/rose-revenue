@@ -38,6 +38,14 @@ export function Wordmark({ cfg, compact = false }: { cfg: DemoConfig; compact?: 
       </span>
     );
   }
+  if (cfg.brand?.typeOnly) {
+    return (
+      <span className="flex flex-col leading-none" aria-label={cfg.company.name}>
+        <span className={`demo-wordmark ${compact ? "text-[24px]" : "text-[28px]"}`} aria-hidden="true">{top}</span>
+        <span className="mt-0.5 text-[10px] font-semibold tracking-[0.22em] uppercase opacity-70" aria-hidden="true">{bottom}</span>
+      </span>
+    );
+  }
   return (
     <span className="flex items-center gap-2" aria-label={cfg.company.name}>
       <GenericMark name={cfg.brand?.mark ?? "grass"} size={compact ? 26 : 30} className={cfg.brand?.markColor ? "" : "text-(--d-accent)"} color={cfg.brand?.markColor} />

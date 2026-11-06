@@ -8,7 +8,7 @@ import Icon from "@demos/kit/ui/Icon";
 export type QuickAddItem = { label: string; icon: IconName; go: () => void };
 
 /** Floating "+" (thumb-reachable, above the phone tab bar) that opens a sheet of quick actions. */
-export function QuickAdd({ items, title = "Quick add" }: { items: QuickAddItem[]; title?: string }) {
+export function QuickAdd({ items, title = "Quick add", position = "right-4 bottom-[calc(84px+env(safe-area-inset-bottom))] md:right-6 md:bottom-6", size = "size-16" }: { items: QuickAddItem[]; title?: string; position?: string; size?: string }) {
   const [menu, setMenu] = useState(false);
   return (
     <>
@@ -17,7 +17,7 @@ export function QuickAdd({ items, title = "Quick add" }: { items: QuickAddItem[]
         onClick={() => setMenu(true)}
         aria-label={title}
         aria-haspopup="dialog"
-        className="fixed right-4 bottom-[calc(84px+env(safe-area-inset-bottom))] z-[45] grid size-16 place-items-center rounded-full bg-(--d-accent) text-(--d-on-accent) shadow-[0_12px_30px_-10px_rgb(0_0_0_/_0.6)] hover:brightness-110 md:right-6 md:bottom-6"
+        className={`fixed ${position} z-[45] grid ${size} place-items-center rounded-full bg-(--d-accent) text-(--d-on-accent) shadow-[0_12px_30px_-10px_rgb(0_0_0_/_0.6)] hover:brightness-110`}
       >
         <Icon name="plus" size={30} />
       </button>

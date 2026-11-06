@@ -10,7 +10,7 @@
   background: var(--d-bg);
   color: var(--d-text);
   font-family: var(--font-demo-body), "Open Sans", system-ui, sans-serif;
-  font-size: 15px;
+  font-size: 15px; /* a demo's look.bodySize overrides this inline */
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
   /* Sit above the marketing grain overlay (z 50) if it were ever present. */
@@ -173,6 +173,18 @@ textarea.demo-input {
     max-height: 92dvh;
     width: 100vw;
     border-radius: 18px 18px 0 0;
+  }
+}
+
+/* Full-height bottom sheet on phones (Dialog `sheet`). */
+@media (max-width: 767px) {
+  .demo-dialog.demo-sheet {
+    height: calc(100dvh - 10px);
+    max-height: calc(100dvh - 10px);
+  }
+
+  .demo-sheet .demo-sheet-bar {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 }
 
