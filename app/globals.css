@@ -48,6 +48,31 @@ html {
   }
 }
 
+/* Scroll snap: when a scroll comes to rest NEAR a headline, settle it at
+   the top of the screen. "proximity", not "mandatory": most sections are
+   taller than a phone, so they still scroll freely in the middle. Off for
+   people who ask for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+}
+
+.snap {
+  scroll-snap-align: start;
+  scroll-margin-top: 28px;
+}
+
+.snap-flush {
+  scroll-snap-align: start;
+}
+
+@media (min-width: 1024px) {
+  .snap {
+    scroll-margin-top: 72px;
+  }
+}
+
 /* No body background: the html background paints the canvas, and the fixed
    hero art (z-index -10) must show through where sections are transparent. */
 body {

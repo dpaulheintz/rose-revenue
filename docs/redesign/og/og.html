@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+  Source for public/og.jpg (the link-preview image when the site is texted or shared).
+  Render at exactly 1200×630 with any headless browser, e.g. Playwright:
+    page.setViewportSize({ width: 1200, height: 630 }); page.goto("file://…/og.html");
+    page.screenshot({ path: "public/og.jpg", type: "jpeg", quality: 88 });
+  Uses the site's own hero art, pixel sun, and Instrument Serif.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=block" rel="stylesheet">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; background: #020d02; }
+  .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
+  /* Darkens the sky behind the words; leaves the hills and the path alone. */
+  .scrim { position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgb(2 13 2 / .58) 0%, rgb(2 13 2 / .38) 38%, rgb(2 13 2 / .08) 72%, rgb(2 13 2 / 0) 100%),
+      linear-gradient(90deg, rgb(2 13 2 / .35) 0%, rgb(2 13 2 / 0) 60%); }
+  .content { position: absolute; left: 72px; top: 58px; right: 72px; color: #f2e4dd; font-family: "Instrument Serif", Georgia, serif; }
+  .mark { display: flex; align-items: center; gap: 14px; font-size: 38px; line-height: 1; letter-spacing: -0.01em; }
+  .mark img { width: 36px; height: 27px; }
+  h1 { margin-top: 56px; font-weight: 400; font-size: 104px; line-height: 0.94; letter-spacing: -0.02em; max-width: 13.5ch; }
+</style>
+</head>
+<body>
+  <img class="art" src="../../../public/hero.webp" alt="">
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="mark"><img src="../../../public/pixel-sun.svg" alt=""><span>Rose <i>Revenue</i></span></div>
+    <h1>We build the tools your business wishes existed.</h1>
+  </div>
+</body>
+</html>
