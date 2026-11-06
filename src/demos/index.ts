@@ -7,14 +7,16 @@ import { act2 } from "./act2/config";
 import { meta as act2Meta } from "./act2/meta";
 import { buckeye } from "./buckeye/config";
 import { meta as buckeyeMeta } from "./buckeye/meta";
+import { atwood } from "./atwood/config";
+import { meta as atwoodMeta } from "./atwood/meta";
 import { simpletimes } from "./simpletimes/config";
 import { meta as simpletimesMeta } from "./simpletimes/meta";
 import { sweetgrass } from "./sweetgrass/config";
 import { meta as sweetgrassMeta } from "./sweetgrass/meta";
 
-export const DEMOS: DemoConfig[] = [sweetgrass, act2, buckeye, simpletimes];
+export const DEMOS: DemoConfig[] = [sweetgrass, act2, buckeye, simpletimes, atwood];
 export const demoSlugs = DEMOS.map((d) => d.slug);
 export const getConfig = (slug: string) => DEMOS.find((d) => d.slug === slug) ?? null;
 
-const METAS: Record<string, DemoMeta> = { sweetgrass: sweetgrassMeta, act2: act2Meta, buckeye: buckeyeMeta, simpletimes: simpletimesMeta };
+const METAS: Record<string, DemoMeta> = { sweetgrass: sweetgrassMeta, act2: act2Meta, buckeye: buckeyeMeta, simpletimes: simpletimesMeta, atwood: atwoodMeta };
 export const getMeta = (slug: string): DemoMeta | null => METAS[slug] ?? null;

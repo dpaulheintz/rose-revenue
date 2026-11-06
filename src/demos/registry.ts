@@ -4,6 +4,8 @@
 import type { ComponentType, CSSProperties, ReactNode } from "react";
 import type { DemoConfig, DemoMeta } from "./kit/types";
 import { getConfig, getMeta } from "./index";
+import * as atwoodFonts from "./atwood/fonts";
+import * as atwoodClient from "./atwood/pages";
 import * as act2Fonts from "./act2/fonts";
 import * as act2Client from "./act2/pages";
 import * as buckeyeFonts from "./buckeye/fonts";
@@ -28,6 +30,7 @@ const entries: Record<string, Omit<Registered, "config" | "meta">> = {
   act2: { fontClass: act2Fonts.fontClass, fontVars: act2Fonts.fontVars as CSSProperties, Provider: act2Client.Data, Screen: act2Client.Screen },
   buckeye: { fontClass: buckeyeFonts.fontClass, fontVars: buckeyeFonts.fontVars as CSSProperties, Provider: buckeyeClient.Data, Screen: buckeyeClient.Screen },
   simpletimes: { fontClass: simpletimesFonts.fontClass, fontVars: simpletimesFonts.fontVars as CSSProperties, Provider: simpletimesClient.Data, Screen: simpletimesClient.Screen, Shell: simpletimesClient.Shell },
+  atwood: { fontClass: atwoodFonts.fontClass, fontVars: atwoodFonts.fontVars as CSSProperties, Provider: atwoodClient.Data, Screen: atwoodClient.Screen, Shell: atwoodClient.Shell },
 };
 
 export function getRegistered(slug: string): Registered | null {
