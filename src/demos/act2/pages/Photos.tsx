@@ -4,7 +4,7 @@ import { useState } from "react";
 import { shortDate } from "@demos/kit/data/format";
 import type { PhotoTag } from "@demos/act2/model";
 import Icon from "@demos/kit/ui/Icon";
-import { Button, Card, FilterChip, PageHeader } from "@demos/kit/ui/ui";
+import { Button, Card, ChipRow, FilterChip, PageHeader } from "@demos/kit/ui/ui";
 import { PhotoTile } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
 
@@ -19,9 +19,9 @@ export default function Photos() {
   return (
     <div className="space-y-5">
       <PageHeader title="Photos & notes" meta={`${book.photos.length} photos across ${new Set(book.photos.map((p) => p.job)).size} jobs · placeholders stand in for the crew's phone photos`} actions={<Button variant="primary" onClick={() => open({ kind: "quick", what: "photo" })}><Icon name="camera" size={18} />Add photo</Button>} />
-      <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow>
         {(["All", "Before", "During", "After"] as const).map((t) => <FilterChip key={t} on={tag === t} onClick={() => setTag(t)} count={t === "All" ? book.photos.length : book.photos.filter((p) => p.tag === t).length}>{t}</FilterChip>)}
-      </div>
+      </ChipRow>
       <div className="space-y-5">
         {recentJobs.map((jid) => {
           const j = job(jid);

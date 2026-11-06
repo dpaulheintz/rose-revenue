@@ -4,6 +4,7 @@
 import { addDays, firstOfMonth, monthIndex, monthKey, weekStart, weekday, type Ymd } from "@demos/kit/data/dates";
 import { emailFor, peopleNames, phone555, streetAddress } from "@demos/kit/data/fake";
 import { shortDate } from "@demos/kit/data/format";
+import { withMargin } from "@demos/kit/data/pricing";
 import { hash, makeRng } from "@demos/kit/data/rng";
 import { industry as defaultIndustry, type Industry } from "./industry";
 
@@ -47,7 +48,7 @@ export function price(ind: Industry, q: QuoteInput) {
   const material = q.qty * q.perPc * q.materialCost;
   const outside = q.route.some((op) => ind.operations[op]?.outside) ? q.qty * ind.outsideCostPerPc : 0;
   const cost = labor + material + outside;
-  const total = cost / (1 - q.margin);
+  const total = withMargin(cost, q.margin);
   return { lines, hours: lines.reduce((s, l) => s + l.hours, 0), labor, material, outside, cost, price: Math.round(total), perPiece: total / Math.max(1, q.qty), matNeed: q.qty * q.perPc };
 }
 

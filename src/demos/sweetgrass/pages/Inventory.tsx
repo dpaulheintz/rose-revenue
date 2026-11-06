@@ -7,7 +7,7 @@ import { buildable, fmtDays, inventoryRows, nextRestock, sum, type InvRow } from
 import { useDemo } from "@demos/kit/shell/DemoProvider";
 import Icon from "@demos/kit/ui/Icon";
 import { SearchBar } from "@demos/kit/ui/SearchBar";
-import { Button, Card, FilterChip, Note, PageHeader, Pill, Segmented, Stat } from "@demos/kit/ui/ui";
+import { Button, Card, ChipRow, FilterChip, Note, PageHeader, Pill, Segmented, Stat } from "@demos/kit/ui/ui";
 import { useFarm } from "@demos/sweetgrass/parts/FarmProvider";
 import { StockPill } from "@demos/sweetgrass/parts/bits";
 
@@ -85,11 +85,11 @@ export default function Inventory() {
 
       {/* The full list. */}
       <section aria-label="All products" className="space-y-3">
-        <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+        <ChipRow>
           {["All", ...cats].map((c) => (
             <FilterChip key={c} on={cat === c} onClick={() => setCat(c)} count={c === "All" ? rows.length : rows.filter((r) => r.s.category === c).length}>{c}</FilterChip>
           ))}
-        </div>
+        </ChipRow>
         <div className="flex flex-wrap items-center gap-3">
           <SearchBar className="min-w-0 flex-1 basis-56" label="Search products" placeholder="Search products" value={q} onChange={(v) => setQ(v)} />
           <Segmented label="Status" value={status} onChange={setStatus} options={[{ value: "all", label: "All" }, { value: "Low", label: `Low (${low.length})` }, { value: "Out", label: `Out (${out.length})` }]} />

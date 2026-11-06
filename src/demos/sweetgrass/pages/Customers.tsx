@@ -9,7 +9,7 @@ import { useDemo } from "@demos/kit/shell/DemoProvider";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
 import { SearchBar } from "@demos/kit/ui/SearchBar";
-import { Avatar, Button, Card, Field, FilterChip, PageHeader, Pill, Stat, Tabs } from "@demos/kit/ui/ui";
+import { Avatar, Button, Card, ChipRow, Field, FilterChip, PageHeader, Pill, Stat, Tabs } from "@demos/kit/ui/ui";
 import { useFarm } from "@demos/sweetgrass/parts/FarmProvider";
 import { useWhere } from "@demos/sweetgrass/parts/bits";
 
@@ -71,11 +71,11 @@ function CustomerList() {
 
   return (
     <>
-      <div className="demo-scroll-x -mx-4 mb-3 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow className="mb-3">
         {SEGS.map((s) => (
           <FilterChip key={s} on={seg === s} onClick={() => { setSeg(s); setLimit(40); }} count={counts[s]}>{s === "All" ? "All customers" : s}</FilterChip>
         ))}
-      </div>
+      </ChipRow>
       <div className="mb-4 flex flex-wrap items-end gap-3">
         <SearchBar className="min-w-0 flex-1 basis-60" label="Search customers" placeholder="Search name, town or email" value={q} onChange={(v) => { setQ(v); setLimit(40); }} />
         <Field label="Sort by" className="w-48">
@@ -305,12 +305,12 @@ function Herdshare() {
           ))}
         </ul>
       </Card>
-      <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow>
         <FilterChip on={filter === "all"} onClick={() => setFilter("all")} count={owners.length}>All owners</FilterChip>
         <FilterChip on={filter === "agreement"} onClick={() => setFilter("agreement")} count={owners.filter((c) => !c.herdshare!.agreement).length}>Agreement missing</FilterChip>
         <FilterChip on={filter === "fees"} onClick={() => setFilter("fees")} count={owners.filter((c) => c.herdshare!.fee !== "Paid").length}>Fees due</FilterChip>
         <FilterChip on={filter === "renew"} onClick={() => setFilter("renew")} count={owners.filter((c) => renewSoon(c.herdshare!.renews)).length}>Renewing soon</FilterChip>
-      </div>
+      </ChipRow>
       <div className="demo-card demo-scroll-x">
         <table className="w-full min-w-[720px] text-left text-[14px]">
           <thead className="text-[12.5px] text-(--d-muted)">

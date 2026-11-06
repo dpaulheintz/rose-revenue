@@ -6,7 +6,7 @@ import { jobTotal, sum } from "@demos/act2/derive";
 import type { ChangeOrder } from "@demos/act2/model";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
-import { Button, FilterChip, PageHeader, Pill, Stat } from "@demos/kit/ui/ui";
+import { Button, ChipRow, FilterChip, PageHeader, Pill, Stat } from "@demos/kit/ui/ui";
 import { SignaturePad, usd } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
 
@@ -25,9 +25,9 @@ export default function ChangeOrders() {
         <Stat label="Approved, 12 months" value={usd(sum(approved, (c) => c.amount))} sub={`${approved.length} change orders`} tone="good" />
         <Stat label="Avg margin on extras" value={`${Math.round((1 - sum(approved, (c) => c.cost) / Math.max(1, sum(approved, (c) => c.amount))) * 100)}%`} sub="Price vs. cost" />
       </div>
-      <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow>
         {(["All", "Awaiting signature", "Approved", "Declined"] as const).map((s) => <FilterChip key={s} on={filter === s} onClick={() => setFilter(s)} count={s === "All" ? cos.length : cos.filter((c) => c.status === s).length}>{s}</FilterChip>)}
-      </div>
+      </ChipRow>
       <ul className="grid *:min-w-0 gap-2 lg:grid-cols-2">
         {list.map((c) => {
           const j = job(c.job);

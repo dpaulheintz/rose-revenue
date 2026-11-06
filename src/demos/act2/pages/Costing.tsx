@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { addDays } from "@demos/kit/data/dates";
 import { shortDate } from "@demos/kit/data/format";
 import { jobFinance, sum } from "@demos/act2/derive";
-import { FilterChip, Note, PageHeader, Pill, Stat } from "@demos/kit/ui/ui";
+import { ChipRow, FilterChip, Note, PageHeader, Pill, Stat } from "@demos/kit/ui/ui";
 import { BudgetBar } from "@demos/act2/parts/JobSheet";
 import { CrewDot, usd } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
@@ -31,11 +31,11 @@ export default function Costing() {
         <Stat label="Finished, 120 days" value={String(finished.length)} sub={`${Math.round((sum(finished, (x) => x.f.profit) / Math.max(1, sum(finished, (x) => x.f.total))) * 100)}% avg margin`} />
         <Stat label="Over budget, 120 days" value={String(over.length)} sub={`${usd(sum(over, (x) => Math.max(0, x.f.variance)))} over plan`} tone="warn" />
       </div>
-      <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow>
         <FilterChip on={filter === "live"} onClick={() => setFilter("live")} count={live.length}>In progress</FilterChip>
         <FilterChip on={filter === "finished"} onClick={() => setFilter("finished")} count={finished.length}>Finished projects</FilterChip>
         <FilterChip on={filter === "over"} onClick={() => setFilter("over")} count={over.length}>Over budget</FilterChip>
-      </div>
+      </ChipRow>
       <ul className="grid *:min-w-0 gap-3 lg:grid-cols-2">
         {list.map(({ j, f }) => (
           <li key={j.id}>

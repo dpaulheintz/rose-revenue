@@ -7,7 +7,7 @@ import { aging, estimateTotal, INVOICE_STATUSES, jobTotal, sum, winRate, type In
 import type { EstimateStatus } from "@demos/act2/model";
 import Icon from "@demos/kit/ui/Icon";
 import { SearchBar } from "@demos/kit/ui/SearchBar";
-import { Button, Card, FilterChip, PageHeader, Pill, Stat, Tabs } from "@demos/kit/ui/ui";
+import { Button, Card, ChipRow, FilterChip, PageHeader, Pill, Stat, Tabs } from "@demos/kit/ui/ui";
 import { n, StatusChip, usd } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
 
@@ -67,11 +67,11 @@ function Invoices() {
         ))}
       </ul>
 
-      <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow>
         <FilterChip on={status === "Open"} onClick={() => setStatus("Open")} count={rows.filter((r) => r.balance > 0).length}>Open</FilterChip>
         {INVOICE_STATUSES.map((s) => <FilterChip key={s} on={status === s} onClick={() => setStatus(s)} count={counts[s]}>{s}</FilterChip>)}
         <FilterChip on={status === "All"} onClick={() => setStatus("All")} count={rows.length}>All</FilterChip>
-      </div>
+      </ChipRow>
       <SearchBar label="Search invoices" placeholder="Search customer or invoice #" value={q} onChange={(v) => setQ(v)} />
 
       {/* Phone: cards. */}
@@ -180,11 +180,11 @@ function Estimates() {
         </div>
       </div>
       <Button variant="primary" className="w-full sm:w-auto" onClick={() => open({ kind: "estimate", id: null })}><Icon name="plus" size={18} />New estimate</Button>
-      <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow>
         <FilterChip on={status === "Open"} onClick={() => setStatus("Open")} count={openEst.length}>Open</FilterChip>
         {(["Draft", "Sent", "Viewed", "Approved", "Declined", "Expired"] as const).map((s) => <FilterChip key={s} on={status === s} onClick={() => setStatus(s)} count={est.filter((e) => e.status === s).length}>{s}</FilterChip>)}
         <FilterChip on={status === "All"} onClick={() => setStatus("All")} count={est.length}>All</FilterChip>
-      </div>
+      </ChipRow>
       <ul className="grid *:min-w-0 gap-2 lg:grid-cols-2">
         {list.map((e) => (
           <li key={e.id}>

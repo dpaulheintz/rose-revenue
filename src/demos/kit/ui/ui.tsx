@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
 import { hash } from "@demos/kit/data/rng";
 import { initials } from "@demos/kit/data/format";
 
@@ -157,7 +157,25 @@ export function FilterChip({ on, onClick, children, count }: { on: boolean; onCl
   );
 }
 
-/** Tabs for switching views within a module. */
+/**
+ * A row of FilterChips (the segmented filter): one line that scrolls sideways
+ * on phones, edge to edge, and sits in the page grid from `sm` up.
+ */
+export function ChipRow({ children, className = "", pad = "pb-1", ...rest }: HTMLAttributes<HTMLDivElement> & { pad?: string }) {
+  return <div {...rest} className={`demo-scroll-x -mx-4 flex gap-2 px-4 ${pad} sm:mx-0 sm:px-0 ${className}`}>{children}</div>;
+}
+
+/** A tappable checkbox row: the whole row is the label. Lay out the row with className. */
+export function CheckRow({ checked, onChange, className, children }: { checked: boolean; onChange: (checked: boolean) => void; className: string; children: ReactNode }) {
+  return (
+    <label className={className}>
+      <input type="checkbox" className="size-5 shrink-0 accent-(--d-accent)" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      {children}
+    </label>
+  );
+}
+
+/** Tabs for switching views within a module (the lane / section switcher). */
 export function Tabs<T extends string>({ tabs, value, onChange, label }: { tabs: Array<{ value: T; label: string; count?: number }>; value: T; onChange: (v: T) => void; label: string }) {
   return (
     <div role="tablist" aria-label={label} className="demo-scroll-x -mx-4 mb-5 flex gap-1 border-b border-(--d-line) px-4 sm:mx-0 sm:px-0">

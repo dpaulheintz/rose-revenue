@@ -3,6 +3,7 @@
 import { useId, useMemo, useState } from "react";
 import { optionTotals } from "@demos/act2/derive";
 import type { Estimate, EstimateOption, LineItem, LineKind } from "@demos/act2/model";
+import { withMarkup } from "@demos/kit/data/pricing";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
 import { Button, Field, Pill } from "@demos/kit/ui/ui";
@@ -48,7 +49,7 @@ export default function EstimateBuilder({ id, customer, onClose }: { id: string 
   const setLines = (fn: (ls: LineItem[]) => LineItem[]) => setDraft((d) => ({ ...d, options: d.options.map((o, i) => (i === tab ? { ...o, lines: fn(o.lines) } : o)) }));
   const reprice = (m: number) => {
     setMarkup(m);
-    setDraft((d) => ({ ...d, options: d.options.map((o) => ({ ...o, lines: o.lines.map((l) => (l.kind === "Labor" ? l : { ...l, price: r2(l.cost * (1 + m / 100)) })) })) }));
+    setDraft((d) => ({ ...d, options: d.options.map((o) => ({ ...o, lines: o.lines.map((l) => (l.kind === "Labor" ? l : { ...l, price: r2(withMarkup(l.cost, m / 100)) })) })) }));
   };
   const t = totals(opt);
   const deposit = r2(t.total * draft.depositPct);
@@ -106,7 +107,7 @@ export default function EstimateBuilder({ id, customer, onClose }: { id: string 
             {opt.lines.map((l, i) => (
               <li key={i} className="rounded-[12px] border border-(--d-line) p-3">
                 <div className="flex items-start gap-2">
-                  <select aria-label="Line type" disabled={locked} className="demo-input !min-h-11 w-[132px] shrink-0 text-[13px]" value={l.kind} onChange={(e) => { const k = e.target.value as LineKind; setLines((ls) => ls.map((x, j) => (j === i ? { ...x, kind: k, unit: k === "Labor" ? "hr" : "lot", price: k === "Labor" ? 85 : r2(x.cost * (1 + markup / 100)) } : x))); }}>
+                  <select aria-label="Line type" disabled={locked} className="demo-input !min-h-11 w-[132px] shrink-0 text-[13px]" value={l.kind} onChange={(e) => { const k = e.target.value as LineKind; setLines((ls) => ls.map((x, j) => (j === i ? { ...x, kind: k, unit: k === "Labor" ? "hr" : "lot", price: k === "Labor" ? 85 : r2(withMarkup(x.cost, markup / 100)) } : x))); }}>
                     {(["Labor", "Materials", "Subcontractor"] as const).map((k) => <option key={k}>{k}</option>)}
                   </select>
                   <input aria-label="Description" disabled={locked} className="demo-input !min-h-11 min-w-0 flex-1" value={l.desc} onChange={(e) => setLines((ls) => ls.map((x, j) => (j === i ? { ...x, desc: e.target.value } : x)))} />
@@ -114,7 +115,7 @@ export default function EstimateBuilder({ id, customer, onClose }: { id: string 
                 </div>
                 <div className="mt-2 grid grid-cols-3 items-end gap-2 text-[13px]">
                   <label className="flex flex-col gap-1"><span className="text-(--d-muted)">{l.unit === "hr" ? "Hours" : "Qty"}</span><input disabled={locked} inputMode="decimal" className="demo-input !min-h-11" value={l.qty} onChange={(e) => setLines((ls) => ls.map((x, j) => (j === i ? { ...x, qty: Number(e.target.value.replace(/[^\d.]/g, "")) || 0 } : x)))} /></label>
-                  <label className="flex flex-col gap-1"><span className="text-(--d-muted)">{l.kind === "Labor" ? "Rate" : "Our cost"}</span><input disabled={locked} inputMode="decimal" className="demo-input !min-h-11" value={l.kind === "Labor" ? l.price : l.cost} onChange={(e) => { const v = Number(e.target.value.replace(/[^\d.]/g, "")) || 0; setLines((ls) => ls.map((x, j) => (j === i ? (x.kind === "Labor" ? { ...x, price: v } : { ...x, cost: v, price: r2(v * (1 + markup / 100)) }) : x))); }} /></label>
+                  <label className="flex flex-col gap-1"><span className="text-(--d-muted)">{l.kind === "Labor" ? "Rate" : "Our cost"}</span><input disabled={locked} inputMode="decimal" className="demo-input !min-h-11" value={l.kind === "Labor" ? l.price : l.cost} onChange={(e) => { const v = Number(e.target.value.replace(/[^\d.]/g, "")) || 0; setLines((ls) => ls.map((x, j) => (j === i ? (x.kind === "Labor" ? { ...x, price: v } : { ...x, cost: v, price: r2(withMarkup(v, markup / 100)) }) : x))); }} /></label>
                   <p className="pb-2.5 text-right"><span className="block text-(--d-muted)">Line total</span><span className="font-semibold tabular-nums">{usd(l.qty * l.price, true)}</span></p>
                 </div>
               </li>
@@ -123,7 +124,7 @@ export default function EstimateBuilder({ id, customer, onClose }: { id: string 
           {!locked ? (
             <div className="mt-2 flex flex-wrap gap-2">
               {(["Labor", "Materials", "Subcontractor"] as const).map((k) => (
-                <Button key={k} variant="ghost" onClick={() => setLines((ls) => [...ls, k === "Labor" ? { kind: k, desc: "Labor", qty: 8, unit: "hr", price: 85, cost: 35 } : { kind: k, desc: k === "Materials" ? "Materials" : "Sub", qty: 1, unit: "lot", price: r2(500 * (1 + markup / 100)), cost: 500 }])}>
+                <Button key={k} variant="ghost" onClick={() => setLines((ls) => [...ls, k === "Labor" ? { kind: k, desc: "Labor", qty: 8, unit: "hr", price: 85, cost: 35 } : { kind: k, desc: k === "Materials" ? "Materials" : "Sub", qty: 1, unit: "lot", price: r2(withMarkup(500, markup / 100)), cost: 500 }])}>
                   <Icon name="plus" size={16} />{k}
                 </Button>
               ))}

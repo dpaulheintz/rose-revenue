@@ -4,9 +4,9 @@ import { useId, useState } from "react";
 import { diffDays } from "@demos/kit/data/dates";
 import { shortDate } from "@demos/kit/data/format";
 import type { Priority, Task, TaskStatus } from "@demos/sweetgrass/model";
+import { PipelineBoard } from "@demos/kit/blocks/PipelineBoard";
 import Icon from "@demos/kit/ui/Icon";
-import Kanban from "@demos/kit/ui/Kanban";
-import { Avatar, PageHeader, Pill, Segmented, type Tone } from "@demos/kit/ui/ui";
+import { Avatar, CheckRow, ChipRow, PageHeader, Pill, Segmented, type Tone } from "@demos/kit/ui/ui";
 import { useFarm } from "@demos/sweetgrass/parts/FarmProvider";
 
 const STATUSES: TaskStatus[] = ["Not started", "Working on it", "Stuck", "Done"];
@@ -33,7 +33,7 @@ export default function Projects() {
         meta={`${seed.boards.length} boards · ${open} open items · drag a card's grip to move it, or change its status`}
         actions={board !== "chores" ? <Segmented label="View" value={view} onChange={setView} options={[{ value: "kanban", label: <><Icon name="columns" size={16} />Kanban</> }, { value: "table", label: <><Icon name="table" size={16} />Table</> }]} /> : null}
       />
-      <div role="tablist" aria-label="Boards" className="demo-scroll-x -mx-4 mb-5 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow role="tablist" aria-label="Boards" className="mb-5">
         {[...seed.boards.map((b) => ({ id: b.id, name: b.name, n: items.filter((i) => i.board === b.id && i.status !== "Done").length })), { id: "chores", name: "Daily chores", n: choresLeft }].map((b) => (
           <button
             key={b.id}
@@ -47,7 +47,7 @@ export default function Projects() {
             <span className={`rounded-full px-1.5 text-[12px] ${board === b.id ? "bg-black/15" : "bg-(--d-panel2) text-(--d-muted)"}`}>{b.n}</span>
           </button>
         ))}
-      </div>
+      </ChipRow>
       {board === "chores" ? <Chores /> : view === "kanban" ? <Board items={items.filter((i) => i.board === board)} /> : <TableView items={items.filter((i) => i.board === board)} />}
     </div>
   );
@@ -76,12 +76,12 @@ function Due({ item }: { item: Task }) {
 function Board({ items }: { items: Task[] }) {
   const { person, setTaskStatus } = useFarm();
   return (
-    <Kanban
+    <PipelineBoard
       items={items}
-      columns={STATUSES}
-      statusOf={(i) => i.status}
+      stages={STATUSES}
+      stageOf={(i) => i.status}
       onMove={setTaskStatus}
-      columnLabel={(s) => <span className={`rounded-full px-2.5 py-0.5 text-[12.5px] font-semibold ${STATUS_STYLE[s]}`}>{s}</span>}
+      stageClass={(s) => STATUS_STYLE[s]}
       renderCard={(it, grip, ghost) => (
         <div className="p-2.5">
           <div className="flex items-start gap-1">
@@ -151,15 +151,14 @@ function Chores() {
         <ul className="divide-y divide-(--d-line)">
           {seed.chores.map((c, i) => (
             <li key={c.task}>
-              <label className="flex min-h-14 cursor-pointer items-center gap-3 py-1.5">
-                <input type="checkbox" className="size-5 shrink-0 accent-(--d-accent)" checked={done.has(`chore-${i}`)} onChange={() => toggleDone(`chore-${i}`)} />
+              <CheckRow className="flex min-h-14 cursor-pointer items-center gap-3 py-1.5" checked={done.has(`chore-${i}`)} onChange={() => toggleDone(`chore-${i}`)}>
                 <span className="demo-mono w-12 shrink-0 text-[13px] text-(--d-muted)">{c.time}</span>
                 <span className="min-w-0 flex-1">
                   <span className={`block ${done.has(`chore-${i}`) ? "text-(--d-muted) line-through" : ""}`}>{c.task}</span>
                   <span className="block text-[12.5px] text-(--d-muted)">{c.area}</span>
                 </span>
                 <Avatar name={person(c.owner).name} size={28} />
-              </label>
+              </CheckRow>
             </li>
           ))}
         </ul>

@@ -7,7 +7,7 @@ import { ResponsiveTable, type Column } from "@demos/kit/blocks/ResponsiveTable"
 import { EmptyState } from "@demos/kit/ui/EmptyState";
 import Kanban from "@demos/kit/ui/Kanban";
 import { SearchBar } from "@demos/kit/ui/SearchBar";
-import { FilterChip, PageHeader, Tabs } from "@demos/kit/ui/ui";
+import { ChipRow, FilterChip, PageHeader, Tabs } from "@demos/kit/ui/ui";
 import { useShop } from "@demos/buckeye/parts/BuckeyeProvider";
 import { Num, StatusPill, Traveler, v } from "@demos/buckeye/parts/bits";
 
@@ -40,10 +40,10 @@ export default function Jobs() {
 
       {tab === "list" ? (
         <>
-          <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+          <ChipRow>
             <FilterChip on={status === "All"} onClick={() => setStatus("All")} count={k.open.length}>All</FilterChip>
             {(["Late", "At risk", "On track"] as const).map((s) => <FilterChip key={s} on={status === s} onClick={() => setStatus(s)} count={counts[s]}>{s}</FilterChip>)}
-          </div>
+          </ChipRow>
           <SearchBar label={`Search ${v.jobs}`} placeholder={`Search ${v.job}, customer or ${v.part}`} value={q} onChange={setQ} />
           {rows.length ? (
             <ResponsiveTable

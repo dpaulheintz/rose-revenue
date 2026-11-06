@@ -8,7 +8,7 @@ import type { EquipmentItem } from "@demos/sweetgrass/model";
 import { BarList } from "@demos/kit/ui/charts";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
-import { Button, Card, Field, FilterChip, PageHeader, Pill, Stat } from "@demos/kit/ui/ui";
+import { Button, Card, ChipRow, Field, FilterChip, PageHeader, Pill, Stat } from "@demos/kit/ui/ui";
 import { useFarm } from "@demos/sweetgrass/parts/FarmProvider";
 
 export default function Maintenance() {
@@ -58,11 +58,11 @@ export default function Maintenance() {
         <Stat label="Routine service, 12 months" value={moneyK(sum(yearLog.filter((l) => l.title.startsWith("Routine")), (l) => l.cost))} sub="Parts + outside shop" />
       </div>
 
-      <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow>
         {["All", ...groups].map((g) => (
           <FilterChip key={g} on={group === g} onClick={() => setGroup(g)} count={g === "All" ? items.length : items.filter((x) => x.e.group === g).length}>{g}</FilterChip>
         ))}
-      </div>
+      </ChipRow>
 
       <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {shown.map((x) => (

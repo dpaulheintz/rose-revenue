@@ -8,7 +8,7 @@ import { useDemo } from "@demos/kit/shell/DemoProvider";
 import { ColumnChart } from "@demos/kit/ui/charts";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
-import { Avatar, Button, Card, Field, PageHeader, Segmented } from "@demos/kit/ui/ui";
+import { Avatar, Button, Card, ChipRow, Field, PageHeader, Segmented } from "@demos/kit/ui/ui";
 import { CrewDot } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
 
@@ -56,14 +56,14 @@ export default function Crew() {
       <PageHeader title="Crew & time" meta={`${seed.workers.length} people on ${seed.crews.length} crews · hours flow into job costing and payroll`} actions={<Button onClick={() => notify()}><Icon name="table" size={18} />Export payroll</Button>} />
 
       <Card title="Clock in / out">
-        <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-2 sm:mx-0 sm:px-0" role="radiogroup" aria-label="Who's clocking">
+        <ChipRow pad="pb-2" role="radiogroup" aria-label="Who's clocking">
           {seed.workers.map((x) => (
             <button key={x.id} type="button" role="radio" aria-checked={who === x.id} onClick={() => { setWho(x.id); setJobFor(""); }} className={`flex min-h-14 shrink-0 items-center gap-2 rounded-full border px-3 pr-4 ${who === x.id ? "border-(--d-accent) bg-[color-mix(in_oklab,var(--d-accent)_14%,transparent)]" : "border-(--d-line)"}`}>
               <Avatar name={x.name} size={32} />
               <span className="text-left text-[13.5px] leading-tight"><span className="block font-semibold">{x.name.split(" ")[0]}</span><span className="block text-(--d-muted)">{clocked[x.id] ? "On the clock" : x.role}</span></span>
             </button>
           ))}
-        </div>
+        </ChipRow>
         <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
           {c ? (
             <div>

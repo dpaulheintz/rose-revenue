@@ -10,7 +10,7 @@ import { needsAttention } from "@demos/sweetgrass/insights";
 import { useDemo } from "@demos/kit/shell/DemoProvider";
 import { PreparedBy } from "@demos/kit/shell/Brand";
 import Icon from "@demos/kit/ui/Icon";
-import { Card, Pill, Stat } from "@demos/kit/ui/ui";
+import { Card, CheckRow, Pill, Stat } from "@demos/kit/ui/ui";
 import { ChoreButtons } from "@demos/sweetgrass/parts/Actions";
 import { useFarm } from "@demos/sweetgrass/parts/FarmProvider";
 import PastureMap from "@demos/sweetgrass/parts/PastureMap";
@@ -81,12 +81,11 @@ export default function Overview() {
             <ul className="mt-2 divide-y divide-(--d-line)">
               {(choresLeft.length ? choresLeft : chores).slice(0, 5).map((c) => (
                 <li key={c.key}>
-                  <label className="flex min-h-12 cursor-pointer items-center gap-3 py-1">
-                    <input type="checkbox" checked={done.has(c.key)} onChange={() => toggleDone(c.key)} className="size-5 shrink-0 accent-(--d-accent)" />
+                  <CheckRow className="flex min-h-12 cursor-pointer items-center gap-3 py-1" checked={done.has(c.key)} onChange={() => toggleDone(c.key)}>
                     <span className="demo-mono w-12 shrink-0 text-[13px] text-(--d-muted)">{c.time}</span>
                     <span className={`min-w-0 flex-1 ${done.has(c.key) ? "text-(--d-muted) line-through" : ""}`}>{c.task}</span>
                     <span className="hidden text-[12.5px] text-(--d-muted) sm:inline">{person(c.owner).name.split(" ")[0]}</span>
-                  </label>
+                  </CheckRow>
                 </li>
               ))}
             </ul>

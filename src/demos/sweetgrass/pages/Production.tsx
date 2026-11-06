@@ -7,7 +7,7 @@ import { allLots, fmtDays, sum } from "@demos/sweetgrass/derive";
 import { hash } from "@demos/kit/data/rng";
 import { ColumnChart } from "@demos/kit/ui/charts";
 import Icon from "@demos/kit/ui/Icon";
-import { Card, EarTag, Note, PageHeader, Pill, Stat, Tabs } from "@demos/kit/ui/ui";
+import { Card, CheckRow, EarTag, Note, PageHeader, Pill, Stat, Tabs } from "@demos/kit/ui/ui";
 import { useFarm } from "@demos/sweetgrass/parts/FarmProvider";
 
 type Tab = "cheese" | "tests" | "sanitation" | "sourdough" | "lots";
@@ -189,13 +189,12 @@ function Sanitation() {
         <ul className="divide-y divide-(--d-line)">
           {DAILY.map((d, i) => (
             <li key={d.task}>
-              <label className="flex min-h-14 cursor-pointer items-center gap-3 py-2">
-                <input type="checkbox" className="size-5 shrink-0 accent-(--d-accent)" checked={done.has(`san-d-${i}`)} onChange={() => toggleDone(`san-d-${i}`)} />
+              <CheckRow className="flex min-h-14 cursor-pointer items-center gap-3 py-2" checked={done.has(`san-d-${i}`)} onChange={() => toggleDone(`san-d-${i}`)}>
                 <span className="min-w-0 flex-1">
                   <span className={`block ${done.has(`san-d-${i}`) ? "text-(--d-muted) line-through" : ""}`}>{d.task}</span>
                   <span className="block text-[12.5px] text-(--d-muted)">{d.area} · {person(d.who).name}</span>
                 </span>
-              </label>
+              </CheckRow>
             </li>
           ))}
         </ul>
@@ -206,13 +205,12 @@ function Sanitation() {
             const last = addDays(t, -((weekday(t) - w.day + 7) % 7 || 7));
             return (
               <li key={w.task}>
-                <label className="flex min-h-14 cursor-pointer items-center gap-3 py-2">
-                  <input type="checkbox" className="size-5 shrink-0 accent-(--d-accent)" checked={done.has(`san-w-${i}`)} onChange={() => toggleDone(`san-w-${i}`)} />
+                <CheckRow className="flex min-h-14 cursor-pointer items-center gap-3 py-2" checked={done.has(`san-w-${i}`)} onChange={() => toggleDone(`san-w-${i}`)}>
                   <span className="min-w-0 flex-1">
                     <span className="block">{w.task}</span>
                     <span className="block text-[12.5px] text-(--d-muted)">{w.area} · {person(w.who).name} · {DAYS[w.day]}s · last done {shortDate(done.has(`san-w-${i}`) ? t : last)}</span>
                   </span>
-                </label>
+                </CheckRow>
               </li>
             );
           })}

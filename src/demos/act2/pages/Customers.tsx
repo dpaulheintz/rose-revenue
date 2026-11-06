@@ -8,8 +8,8 @@ import type { CustomerKind, Lead, LeadStage } from "@demos/act2/model";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
 import { SearchBar } from "@demos/kit/ui/SearchBar";
-import Kanban from "@demos/kit/ui/Kanban";
-import { Avatar, Button, Card, Field, FilterChip, PageHeader, Pill, Tabs } from "@demos/kit/ui/ui";
+import { PipelineBoard } from "@demos/kit/blocks/PipelineBoard";
+import { Avatar, Button, Card, ChipRow, Field, FilterChip, PageHeader, Pill, Tabs } from "@demos/kit/ui/ui";
 import { n, StatusChip, usd } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
 
@@ -43,13 +43,13 @@ function CustomerList() {
     .sort((a, b) => (sort === "ltv" ? b.ltv - a.ltv : sort === "balance" ? b.open - a.open : sort === "last" ? ((b.lastJob ?? "") > (a.lastJob ?? "") ? 1 : -1) : a.c.name.localeCompare(b.c.name)));
   return (
     <>
-      <div className="demo-scroll-x -mx-4 mb-3 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow className="mb-3">
         {(["All", "Homeowner", "Property manager", "Builder", "Balance"] as const).map((k) => (
           <FilterChip key={k} on={kind === k} onClick={() => { setKind(k); setLimit(40); }} count={k === "All" ? all.length : k === "Balance" ? all.filter((x) => x.open > 0).length : all.filter((x) => x.c.kind === k).length}>
             {k === "All" ? "Everyone" : k === "Balance" ? "Open balance" : `${k}s`}
           </FilterChip>
         ))}
-      </div>
+      </ChipRow>
       <div className="mb-4 flex flex-wrap items-end gap-3">
         <SearchBar className="min-w-0 flex-1 basis-60" label="Search customers" placeholder="Name, street or town" value={q} onChange={(v) => setQ(v)} />
         <Field label="Sort by" className="w-44">
@@ -176,12 +176,12 @@ function Leads() {
   return (
     <div className="space-y-5">
       <Button variant="primary" className="w-full sm:w-auto" onClick={() => open({ kind: "quick", what: "lead" })}><Icon name="plus" size={18} />New lead</Button>
-      <Kanban<Lead, LeadStage>
+      <PipelineBoard<Lead, LeadStage>
         items={leads}
-        columns={STAGES}
-        statusOf={(l) => l.stage}
+        stages={STAGES}
+        stageOf={(l) => l.stage}
         onMove={setLeadStage}
-        columnLabel={(s) => <span className={`rounded-full px-2.5 py-0.5 text-[12.5px] font-semibold ${s === "Won" ? "bg-[color-mix(in_oklab,var(--d-good)_18%,transparent)] text-(--d-good)" : s === "Lost" ? "bg-(--d-panel) text-(--d-muted)" : "bg-[color-mix(in_oklab,var(--d-accent)_18%,transparent)] text-(--d-accent)"}`}>{s}</span>}
+        stageClass={(s) => (s === "Won" ? "bg-[color-mix(in_oklab,var(--d-good)_18%,transparent)] text-(--d-good)" : s === "Lost" ? "bg-(--d-panel) text-(--d-muted)" : "bg-[color-mix(in_oklab,var(--d-accent)_18%,transparent)] text-(--d-accent)")}
         renderCard={(l, grip) => {
           const due = l.followUp ? diffDays(l.followUp, t) : null;
           return (

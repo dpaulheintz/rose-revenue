@@ -8,7 +8,7 @@ import { jobFinance } from "@demos/act2/derive";
 import type { CrewId, Job, JobStatus } from "@demos/act2/model";
 import Icon from "@demos/kit/ui/Icon";
 import { SearchBar } from "@demos/kit/ui/SearchBar";
-import { Button, FilterChip, PageHeader, Pill, Segmented } from "@demos/kit/ui/ui";
+import { Button, ChipRow, FilterChip, PageHeader, Pill, Segmented } from "@demos/kit/ui/ui";
 import { CrewDot, usd } from "@demos/act2/parts/bits";
 import { useShop } from "@demos/act2/parts/ShopProvider";
 
@@ -138,11 +138,11 @@ function JobList() {
   return (
     <section aria-labelledby="joblist-h" className="space-y-3">
       <h2 id="joblist-h" className="demo-display text-[22px]">All jobs</h2>
-      <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow>
         {(["Live", "In progress", "Scheduled", "Complete", "Paid", "All"] as const).map((s) => (
           <FilterChip key={s} on={status === s} onClick={() => { setStatus(s); setLimit(25); }} count={s === "All" ? book.jobs.length : s === "Live" ? book.jobs.filter((j) => j.status === "In progress" || j.status === "Scheduled").length : book.jobs.filter((j) => j.status === s).length}>{s === "Live" ? "In progress + scheduled" : s}</FilterChip>
         ))}
-      </div>
+      </ChipRow>
       <SearchBar label="Search jobs" placeholder="Search job #, type or customer" value={q} onChange={(v) => setQ(v)} />
       <ul className="grid *:min-w-0 gap-2 lg:grid-cols-2">
         {list.slice(0, limit).map((j) => {

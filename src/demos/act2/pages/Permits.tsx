@@ -5,7 +5,7 @@ import { addDays, diffDays } from "@demos/kit/data/dates";
 import { dayDate, shortDate } from "@demos/kit/data/format";
 import { fmtDays } from "@demos/act2/derive";
 import type { Permit } from "@demos/act2/model";
-import { Card, FilterChip, PageHeader, Pill, Stat } from "@demos/kit/ui/ui";
+import { Card, ChipRow, FilterChip, PageHeader, Pill, Stat } from "@demos/kit/ui/ui";
 import { useShop } from "@demos/act2/parts/ShopProvider";
 
 const statusOf = (p: Permit, today: string) => {
@@ -64,11 +64,11 @@ export default function Permits() {
           </ul>
         </Card>
       </div>
-      <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+      <ChipRow>
         <FilterChip on={filter === "open"} onClick={() => setFilter("open")}>Open</FilterChip>
         <FilterChip on={filter === "closed"} onClick={() => setFilter("closed")}>Closed</FilterChip>
         <FilterChip on={filter === "all"} onClick={() => setFilter("all")}>All</FilterChip>
-      </div>
+      </ChipRow>
       <div className="demo-card demo-scroll-x">
         <table className="w-full min-w-[720px] text-left text-[14px]">
           <thead className="text-[12.5px] text-(--d-muted)"><tr className="border-b border-(--d-line)"><th className="px-4 py-3 font-semibold">Permit</th><th className="px-3 py-3 font-semibold">Job</th><th className="px-3 py-3 font-semibold">Town</th><th className="px-3 py-3 font-semibold">Applied</th><th className="px-3 py-3 font-semibold">Issued</th><th className="px-4 py-3 font-semibold">Status</th></tr></thead>

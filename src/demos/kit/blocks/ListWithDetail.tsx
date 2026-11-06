@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import Dialog from "@demos/kit/ui/Dialog";
 import { EmptyState } from "@demos/kit/ui/EmptyState";
 import { SearchBar } from "@demos/kit/ui/SearchBar";
-import { Button, FilterChip } from "@demos/kit/ui/ui";
+import { Button, ChipRow, FilterChip } from "@demos/kit/ui/ui";
 import { ResponsiveTable, type Column } from "./ResponsiveTable";
 
 export type ListFilter<T> = { id: string; label: string; test: (r: T) => boolean };
@@ -43,10 +43,10 @@ export function ListWithDetail<T>({
   return (
     <div className="space-y-3">
       {filters.length ? (
-        <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+        <ChipRow>
           <FilterChip on={!filter} onClick={() => { setFilter(null); setLimit(pageSize); }} count={rows.length}>All</FilterChip>
           {filters.map((f) => <FilterChip key={f.id} on={filter === f.id} onClick={() => { setFilter(f.id); setLimit(pageSize); }} count={rows.filter(f.test).length}>{f.label}</FilterChip>)}
-        </div>
+        </ChipRow>
       ) : null}
       <div className="flex flex-wrap items-end gap-3">
         <SearchBar className="min-w-0 flex-1 basis-60" label={searchLabel} placeholder={searchPlaceholder ?? searchLabel} value={q} onChange={(v) => { setQ(v); setLimit(pageSize); }} />

@@ -5,11 +5,12 @@ import { price, type QuoteStatus } from "@demos/buckeye/data";
 import { shortDay } from "@demos/buckeye/derive";
 import { industry as ind } from "@demos/buckeye/industry";
 import { DocumentPaper } from "@demos/kit/blocks/DocumentPaper";
+import { PriceBreakdown } from "@demos/kit/blocks/PriceBreakdown";
 import { ResponsiveTable, type Column } from "@demos/kit/blocks/ResponsiveTable";
 import { usd } from "@demos/kit/data/format";
 import Dialog from "@demos/kit/ui/Dialog";
 import Icon from "@demos/kit/ui/Icon";
-import { Button, Card, Field, FilterChip, Note, PageHeader, Pill, type Tone } from "@demos/kit/ui/ui";
+import { Button, Card, ChipRow, Field, FilterChip, Note, PageHeader, Pill, type Tone } from "@demos/kit/ui/ui";
 import { useShop } from "@demos/buckeye/parts/BuckeyeProvider";
 import { Num, v } from "@demos/buckeye/parts/bits";
 
@@ -94,17 +95,16 @@ export default function Quotes() {
         </Card>
 
         <Card title={`Price, from your ${v.shop} rates`}>
-          <table className="w-full text-[14px]">
-            <tbody>
-              {est.lines.map((l) => (
-                <tr key={l.op} className="border-b border-(--d-line)"><td className="py-1.5">{l.label}<span className="block text-[12.5px] text-(--d-muted)">{l.hours.toFixed(1)} hr at {usd(l.rate)}/hr</span></td><td className="py-1.5 text-right">{usd(l.cost)}</td></tr>
-              ))}
-              <tr className="border-b border-(--d-line)"><td className="py-1.5">Material<span className="block text-[12.5px] text-(--d-muted)">{Math.round(est.matNeed)} {material(materialId).unit} of {material(materialId).name}</span></td><td className="py-1.5 text-right">{usd(est.material)}</td></tr>
-              {est.outside ? <tr className="border-b border-(--d-line)"><td className="py-1.5">Outside processing</td><td className="py-1.5 text-right">{usd(est.outside)}</td></tr> : null}
-              <tr><td className="pt-2 text-(--d-muted)">Cost</td><td className="pt-2 text-right text-(--d-muted)">{usd(est.cost)}</td></tr>
-            </tbody>
-          </table>
-          <p className="mt-2 flex items-end justify-between gap-3 border-t-2 border-(--d-text) pt-2"><span className="text-[14px]">Quote price<span className="block text-[12.5px] text-(--d-muted)">{usd(est.perPiece, true)} per piece</span></span><span className="demo-display text-[34px] leading-none">{usd(est.price)}</span></p>
+          <PriceBreakdown
+            money={(n) => usd(n)}
+            lines={[
+              ...est.lines.map((l) => ({ key: l.op, label: l.label, sub: <>{l.hours.toFixed(1)} hr at {usd(l.rate)}/hr</>, amount: l.cost })),
+              { key: "material", label: "Material", sub: <>{Math.round(est.matNeed)} {material(materialId).unit} of {material(materialId).name}</>, amount: est.material },
+              ...(est.outside ? [{ key: "outside", label: "Outside processing", amount: est.outside }] : []),
+            ]}
+            cost={{ label: "Cost", amount: est.cost }}
+            total={{ label: "Quote price", sub: <>{usd(est.perPiece, true)} per piece</>, amount: est.price }}
+          />
           <div className="mt-3 flex flex-wrap gap-2">
             <Button onClick={() => { addQuote(form, "Needs approval"); notify(); setFilter("Needs approval"); }}>Save for approval</Button>
             <Button variant="primary" onClick={() => convert(addQuote(form, "Won"))}>Convert to {v.job}</Button>
@@ -127,9 +127,9 @@ export default function Quotes() {
       ) : null}
 
       <section className="space-y-3">
-        <div className="demo-scroll-x -mx-4 flex gap-2 px-4 pb-1 sm:mx-0 sm:px-0">
+        <ChipRow>
           {(["Needs approval", "Sent", "Won", "Lost"] as QuoteStatus[]).map((s) => <FilterChip key={s} on={filter === s} onClick={() => setFilter(s)} count={counts[s]}>{s}</FilterChip>)}
-        </div>
+        </ChipRow>
         <ResponsiveTable
           rows={shown} columns={columns} getKey={(q) => q.id} minWidth={860}
           card={(q) => (
